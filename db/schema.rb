@@ -24,15 +24,16 @@ ActiveRecord::Schema.define(version: 20170711094850) do
   end
 
   create_table "gridware_packages", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
-    t.string "name"
+    t.string "name", null: false
     t.string "group"
-    t.string "version"
+    t.string "version", null: false
     t.string "summary"
     t.string "url"
     t.string "description"
-    t.string "package_type"
+    t.string "package_type", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["name", "version", "package_type"], name: "index_gridware_packages_on_name_and_version_and_package_type", unique: true
   end
 
 end

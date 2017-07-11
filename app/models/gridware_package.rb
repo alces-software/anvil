@@ -7,6 +7,21 @@ class GridwarePackage < ApplicationRecord
       message: '%{value} is not a valid Gridware package type'
   }
 
+  validates :name,
+            presence: true,
+            length: {
+                maximum: 512
+            }
+
+  validates :version,
+            presence: true,
+            uniqueness: {
+                scope: [:name, :package_type]
+            },
+            length: {
+                maximum: 64
+            }
+
   def self.from_metadata(md)
     GridwarePackage.new(
       name: md[:title],
