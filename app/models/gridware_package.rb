@@ -22,10 +22,10 @@ class GridwarePackage < ApplicationRecord
                 maximum: 64
             }
 
-  def self.from_metadata(md)
+  def self.from_metadata(md, name_fallback='', version_fallback='')
     GridwarePackage.new(
-      name: md[:title],
-      version: md[:version],
+      name: md[:title] || name_fallback,
+      version: md[:version] || version_fallback,
       package_type: md[:type],
       summary: md[:summary],
       url: md[:url],

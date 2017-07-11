@@ -13,7 +13,8 @@ namespace :gridware do
       metadata_files = zipfile.glob('**/metadata.yml')
       metadata_files.each do |mdf|
         metadata = YAML.load(mdf.get_input_stream().read())
-        gp = GridwarePackage.from_metadata(metadata)
+        path = mdf.name.split('/')
+        gp = GridwarePackage.from_metadata(metadata, path[-3], path[-2])
         gp.save!
       end
 
