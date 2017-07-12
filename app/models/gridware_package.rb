@@ -2,7 +2,7 @@ class GridwarePackage < ApplicationRecord
 
   belongs_to :user
 
-  GRIDWARE_PACKAGE_TYPES = %w(apps libs compilers)
+  GRIDWARE_PACKAGE_TYPES = %w(apps libs compilers mpi)
 
   validates :package_type, inclusion: {
       in: GRIDWARE_PACKAGE_TYPES,
