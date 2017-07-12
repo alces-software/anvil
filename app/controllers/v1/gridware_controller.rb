@@ -1,5 +1,5 @@
 module V1
-  class GridwarePackagesController < ApplicationController
+  class GridwareController < ApplicationController
     include JSONAPI::ActsAsResourceController
   end
 end

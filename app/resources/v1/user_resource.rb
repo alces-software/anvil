@@ -6,6 +6,6 @@ module V1
     primary_key :name
     key_type :string
 
-    has_many :gridware_packages
+    has_many :gridware
   end
 end
