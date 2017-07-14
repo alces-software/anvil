@@ -2,7 +2,7 @@ module V1
   class UserResource < JSONAPI::Resource
     attributes :name
 
-    has_many :gridware
+    has_many :gridware, always_include_linkage_data: true
 
     key_type :string
 
