@@ -1,5 +1,3 @@
-require 'most_recent_paginator'
-
 module V1
   class GridwareResource < JSONAPI::Resource
 
