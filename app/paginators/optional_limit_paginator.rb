@@ -5,7 +5,7 @@ class OptionalLimitPaginator < JSONAPI::Paginator
   end
 
   def apply(relation, order_options)
-    return relation unless @params['limit'].to_i rescue false
+    return relation unless (@params['limit'].to_i > 0 rescue false)
     relation.limit(@params['limit'].to_i)
   end
 
