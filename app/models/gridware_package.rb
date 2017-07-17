@@ -24,15 +24,20 @@ class GridwarePackage < ApplicationRecord
                 maximum: 64
             }
 
-  def self.from_metadata(md, name_fallback='', version_fallback='')
-    GridwarePackage.new(
+  # Update or create record in database from given metadata and user.
+  def self.from_metadata(md, user, name_fallback='', version_fallback='')
+    GridwarePackage.first_or_create(
+      user: user,
       name: md[:title] || name_fallback,
-      version: md[:version] || version_fallback,
-      package_type: md[:type],
-      summary: md[:summary],
-      url: md[:url],
-      description: md[:description],
-      group: md[:group]
-    )
+      version: md[:version] || version_fallback
+    ).tap { |gp|
+      gp.user = user
+      gp.package_type = md[:type]
+      gp.summary = md[:summary]
+      gp.url = md[:url]
+      gp.description = md[:description]
+      gp.group = md[:group]
+    }
   end
+
 end
