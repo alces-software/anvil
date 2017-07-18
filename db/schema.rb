@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170712113902) do
+ActiveRecord::Schema.define(version: 20170718094325) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -34,6 +34,7 @@ ActiveRecord::Schema.define(version: 20170712113902) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.uuid "user_id"
+    t.text "changelog"
     t.index ["name", "version", "package_type"], name: "index_gridware_packages_on_name_and_version_and_package_type", unique: true
   end
 

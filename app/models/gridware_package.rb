@@ -37,6 +37,7 @@ class GridwarePackage < ApplicationRecord
       gp.url = md[:url]
       gp.description = md[:description]
       gp.group = md[:group]
+      gp.changelog = md[:changelog]
     }
   end
 
