@@ -30,6 +30,7 @@ ActiveRecord::Schema.define(version: 20170718100511) do
     t.string "s3_url", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["name", "user_id"], name: "index_customizers_on_name_and_user_id", unique: true
   end
 
   create_table "gridware_packages", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|

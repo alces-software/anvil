@@ -5,6 +5,9 @@ class Customizer < ApplicationRecord
             presence: true,
             length: {
                 maximum: 512
+            },
+            uniqueness: {
+                scope: :user
             }
 
   validates :s3_url, presence: true

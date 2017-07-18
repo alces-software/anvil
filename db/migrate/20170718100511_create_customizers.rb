@@ -8,5 +8,7 @@ class CreateCustomizers < ActiveRecord::Migration[5.1]
 
       t.timestamps
     end
+
+    add_index :customizers, [:name, :user_id], unique: true
   end
 end
