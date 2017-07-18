@@ -4,7 +4,7 @@ require 'zip'
 
 GRIDWARE_ZIP_URL = 'https://github.com/alces-software/gridware-packages-main/archive/master.zip'
 
-def do_import
+def do_gridware_import
   remote_zip = open(GRIDWARE_ZIP_URL)
 
   alces = User.find_by_name('alces')
@@ -31,12 +31,12 @@ namespace :gridware do
 
     GridwarePackage.delete_all
 
-    do_import
+    do_gridware_import
 
   end
 
   desc 'Update Gridware packages by importing metadata from GitHub'
   task :update => :environment do
-      do_import
+      do_gridware_import
   end
 end
