@@ -4,6 +4,8 @@ Rails.application.routes.draw do
 
     jsonapi_resources :gridware
 
+    jsonapi_resources :customizers
+
     jsonapi_resources :users
   end
 end
