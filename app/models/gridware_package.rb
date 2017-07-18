@@ -26,11 +26,11 @@ class GridwarePackage < ApplicationRecord
 
   # Update or create record in database from given metadata and user.
   def self.from_metadata(md, user, name_fallback='', version_fallback='')
-    GridwarePackage.first_or_create(
+    GridwarePackage.where(
       user: user,
       name: md[:title] || name_fallback,
       version: md[:version] || version_fallback
-    ).tap { |gp|
+    ).first_or_create.tap { |gp|
       gp.user = user
       gp.package_type = md[:type]
       gp.summary = md[:summary]
