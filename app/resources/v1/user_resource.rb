@@ -2,8 +2,9 @@ module V1
   class UserResource < JSONAPI::Resource
     attributes :name
 
-    has_many :gridware, always_include_linkage_data: true
+    has_many :articles, always_include_linkage_data: true
     has_many :customizers, always_include_linkage_data: true
+    has_many :gridware, always_include_linkage_data: true
 
     key_type :string
 
