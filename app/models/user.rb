@@ -1,5 +1,7 @@
 class User < ApplicationRecord
 
+  require 'json_web_token'
+
   devise :confirmable, :database_authenticatable, :registerable,
          :recoverable, :rememberable, :trackable, :validatable
 
@@ -10,4 +12,15 @@ class User < ApplicationRecord
   validates :name, uniqueness: true
 
   alias_attribute :gridware, :gridware_packages
+
+  def as_json(options)
+    super.tap do |h|
+      h[:authentication_token] = authentication_token if ::JsonWebToken.enabled?
+    end
+  end
+
+  def authentication_token
+    JsonWebToken.encode({account_id: id}) if ::JsonWebToken.enabled?
+  end
+
 end
