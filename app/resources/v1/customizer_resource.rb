@@ -1,5 +1,5 @@
 module V1
-  class CustomizerResource < JSONAPI::Resource
+  class CustomizerResource < ResourceBase
 
     paginator :optional_limit
 

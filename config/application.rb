@@ -41,6 +41,9 @@ module Anvil
       config.json_key_format = :camelized_key
       config.resource_key_type = :uuid
       config.always_include_to_one_linkage_data = true
+      config.exception_class_whitelist = [
+        CanCan::AccessDenied
+      ]
     end
 
   end

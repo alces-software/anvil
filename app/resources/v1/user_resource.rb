@@ -1,5 +1,5 @@
 module V1
-  class UserResource < JSONAPI::Resource
+  class UserResource < ResourceBase
     attributes :name
 
     has_many :articles, always_include_linkage_data: true

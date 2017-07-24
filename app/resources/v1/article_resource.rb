@@ -1,5 +1,5 @@
 module V1
-  class ArticleResource < JSONAPI::Resource
+  class ArticleResource < ResourceBase
 
     paginator :optional_limit
 

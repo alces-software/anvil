@@ -1,5 +1,5 @@
 module V1
-  class GridwareResource < JSONAPI::Resource
+  class GridwareResource < ResourceBase
 
     model_name 'GridwarePackage'
 
