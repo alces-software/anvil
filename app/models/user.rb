@@ -1,4 +1,8 @@
 class User < ApplicationRecord
+
+  devise :confirmable, :database_authenticatable, :registerable,
+         :recoverable, :rememberable, :trackable, :validatable
+
   has_many :articles
   has_many :customizers
   has_many :gridware_packages
