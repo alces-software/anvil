@@ -2,7 +2,6 @@ class Ability
   include CanCan::Ability
 
   def initialize(user)
-    puts "Ability init with user=#{user}"
     # Content and user profiles are public to read
     can :read, Article
     can :read, Customizer
@@ -10,7 +9,6 @@ class Ability
     can :read, User
     # Anyone can create content, as long as they're logged in
     if user.present?
-      puts "User present"
       can :create, Article
       can :create, Customizer
       can :create, GridwarePackage

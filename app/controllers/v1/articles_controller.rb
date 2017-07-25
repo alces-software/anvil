@@ -1,5 +1,4 @@
 module V1
-  class ArticlesController < ApplicationController
-    include JSONAPI::ActsAsResourceController
+  class ArticlesController < JSONAPIResourceController
   end
 end

@@ -1,5 +1,4 @@
 module V1
-  class CustomizersController < ApplicationController
-    include JSONAPI::ActsAsResourceController
+  class CustomizersController < JSONAPIResourceController
   end
 end

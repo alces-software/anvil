@@ -46,6 +46,7 @@ module V1
     end
 
     def check_authorization(action)
+      puts context
       current_ability = context[:current_ability] || Ability.new(nil)
       current_ability.authorize!(action, @model)
     end

@@ -1,4 +1,7 @@
 class ApplicationController < ActionController::Base
+
+  load_and_authorize_resource
+
   rescue_from CanCan::AccessDenied do |exception|
     errorObject = {
         title: 'Forbidden',
