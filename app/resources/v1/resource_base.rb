@@ -14,7 +14,7 @@ module V1
 
     class << self
       def records(options={})
-        current_ability = options[:context][:current_ability] || empty_ability
+        current_ability = options[:context][:current_ability] || Ability.new(nil)
         current_ability.authorize!(:read, _model_class)
         _model_class.accessible_by(current_ability)
       end
@@ -22,7 +22,7 @@ module V1
 
     def records_for(relation_name)
       relationship = self.class._relationships[relation_name]
-      current_ability = context[:current_ability] || empty_ability
+      current_ability = context[:current_ability] || Ability.new(nil)
       relationship_name = relationship.relation_name(context: context)
 
       case relationship
@@ -46,12 +46,9 @@ module V1
     end
 
     def check_authorization(action)
-      current_ability = context[:current_ability] || empty_ability
+      current_ability = context[:current_ability] || Ability.new(nil)
       current_ability.authorize!(action, @model)
     end
 
-    def self.empty_ability
-      Ability.new(nil)
-    end
   end
 end
