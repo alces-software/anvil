@@ -42,3 +42,4 @@ class GridwarePackage < ApplicationRecord
   end
 
 end
+Gridware = GridwarePackage
