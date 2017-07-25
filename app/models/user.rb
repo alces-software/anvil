@@ -20,7 +20,7 @@ class User < ApplicationRecord
   end
 
   def authentication_token
-    JsonWebToken.encode({account_id: id}) if ::JsonWebToken.enabled?
+    JsonWebToken.encode({user_id: id}) if ::JsonWebToken.enabled?
   end
 
 end

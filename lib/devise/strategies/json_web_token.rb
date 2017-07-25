@@ -12,8 +12,8 @@ module Devise
       end
 
       def authenticate!
-        if claims and account = Account.find_by_id(claims.fetch('account_id'))
-          success! account
+        if claims and user = User.find_by_id(claims.fetch('user_id'))
+          success! user
         else
           fail!
         end

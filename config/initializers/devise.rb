@@ -261,9 +261,10 @@ Devise.setup do |config|
     manager.intercept_401 = false
     require 'json_web_token'
     if ::JsonWebToken.enabled?
+      puts "Enabling JWT"
       require 'devise/strategies/json_web_token'
       manager.strategies.add(:jwt, Devise::Strategies::JsonWebToken)
-      manager.default_strategies(scope: :account).unshift :jwt
+      manager.default_strategies(scope: :user).unshift :jwt
     end
   end
 
