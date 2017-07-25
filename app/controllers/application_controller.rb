@@ -6,9 +6,8 @@ class ApplicationController < ActionController::Base
     errorObject = {
         title: 'Forbidden',
         detail: exception.message,
-        code: "forbidden",
-        status: 403,
-        user: current_user
+        code: 'forbidden',
+        status: 403
     }
     render json: {errors: [errorObject]}, status: :forbidden
   end
