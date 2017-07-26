@@ -82,6 +82,4 @@ test:
 #
 production:
   <<: *default
-  database: anvil_production
-  username: anvil
-  password: <%= ENV['ANVIL_DATABASE_PASSWORD'] %>
+  url: <%= ENV['DATABASE_URL'] %>
