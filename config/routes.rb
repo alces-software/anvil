@@ -29,5 +29,7 @@ Rails.application.routes.draw do
     jsonapi_resources :customizers
 
     jsonapi_resources :users
+
+    get 'search', to: 'search#search'
   end
 end
