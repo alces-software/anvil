@@ -3,10 +3,10 @@ module V1
     def search
 
       query = params[:q]
-      gridware_packages = GridwarePackage.where('name LIKE ?', "%#{params[:q]}%").accessible_by(current_ability)
-      customizers = Customizer.where('name LIKE ?', "%#{params[:q]}%").accessible_by(current_ability)
-      articles = Article.where('title LIKE ?', "%#{params[:q]}%").accessible_by(current_ability)
-      users = User.where('name LIKE ?', "%#{params[:q]}%").accessible_by(current_ability)
+      gridware_packages = GridwarePackage.where('lower(name) LIKE ?', "%#{params[:q].downcase}%").accessible_by(current_ability)
+      customizers = Customizer.where('lower(name) LIKE ?', "%#{params[:q].downcase}%").accessible_by(current_ability)
+      articles = Article.where('lower(title) LIKE ?', "%#{params[:q].downcase}%").accessible_by(current_ability)
+      users = User.where('lower(name) LIKE ?', "%#{params[:q].downcase}%").accessible_by(current_ability)
 
       result = {
           query: query,
