@@ -18,14 +18,6 @@ module V1
       super - [:summary]
     end
 
-    def summary
-      if text.length <= 255
-        text
-      else
-        text[0..255] + '…'
-      end
-    end
-
     private
 
     def set_user

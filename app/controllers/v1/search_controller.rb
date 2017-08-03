@@ -38,6 +38,7 @@ module V1
       articles.each do |a|
         result[:articles][a.id] = {
             title: a.title,
+            summary: a.summary,
             username: a.user.name,
             updatedAt: a.updated_at
         }
