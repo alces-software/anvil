@@ -20,8 +20,8 @@ module V1
         result[:gridware][g.id] = {
             name: g.name,
             version: g.version,
-            username: g.user.name,
             summary: g.summary,
+            username: g.user.name,
             updatedAt: g.updated_at
         }
       end
@@ -29,8 +29,8 @@ module V1
       customizers.each do |c|
         result[:customizers][c.id] = {
             name: c.name,
+            summary: c.summary,
             username: c.user.name,
-            description: c.description,
             updatedAt: c.updated_at
         }
       end

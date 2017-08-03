@@ -3,7 +3,7 @@ module V1
 
     paginator :optional_limit
 
-    attributes :name, :description, :s3_url
+    attributes :name, :summary, :description, :s3_url
     attributes :updated_at, :created_at
 
     has_one :user
