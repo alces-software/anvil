@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170803112600) do
+ActiveRecord::Schema.define(version: 20170803133555) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -48,6 +48,16 @@ ActiveRecord::Schema.define(version: 20170803112600) do
     t.uuid "user_id"
     t.text "changelog"
     t.index ["name", "version", "package_type"], name: "index_gridware_packages_on_name_and_version_and_package_type", unique: true
+  end
+
+  create_table "taggings", force: :cascade do |t|
+    t.string "tag_id", null: false
+    t.uuid "taggable_id", null: false
+    t.string "taggable_type", null: false
+    t.index ["taggable_id", "taggable_type"], name: "index_taggings_on_taggable_id_and_taggable_type"
+  end
+
+  create_table "tags", id: :string, force: :cascade do |t|
   end
 
   create_table "users", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
