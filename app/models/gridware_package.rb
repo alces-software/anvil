@@ -4,7 +4,7 @@ class GridwarePackage < ApplicationRecord
   has_many :taggings, as: :taggable
   has_many :tags, through: :taggings
 
-  GRIDWARE_PACKAGE_TYPES = %w(apps libs compilers mpi)
+  GRIDWARE_PACKAGE_TYPES = %w(apps libs compilers mpi ext)
 
   validates :package_type, inclusion: {
       in: GRIDWARE_PACKAGE_TYPES,
