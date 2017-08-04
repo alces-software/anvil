@@ -21,6 +21,7 @@ module V1
             name: g.name,
             version: g.version,
             summary: g.summary,
+            tagNames: g.tag_names,
             username: g.user.name,
             updatedAt: g.updated_at
         }
@@ -30,6 +31,7 @@ module V1
         result[:customizers][c.id] = {
             name: c.name,
             summary: c.summary,
+            tagNames: c.tag_names,
             username: c.user.name,
             updatedAt: c.updated_at
         }
@@ -39,6 +41,7 @@ module V1
         result[:articles][a.id] = {
             title: a.title,
             summary: a.summary,
+            tagNames: a.tag_names,
             username: a.user.name,
             updatedAt: a.updated_at
         }
