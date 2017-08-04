@@ -5,7 +5,7 @@ module V1
 
     paginator :optional_limit
 
-    attributes :title, :text, :summary
+    attributes :title, :text, :summary, :tag_names
     attributes :updated_at, :created_at
 
     has_one :user
