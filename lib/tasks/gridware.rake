@@ -5,6 +5,8 @@ require 'zip'
 GRIDWARE_MAIN_URL = 'https://github.com/alces-software/gridware-packages-main/archive/master.zip'
 GRIDWARE_VOLATILE_URL = 'https://github.com/alces-software/packager-base/archive/master.zip'
 
+GRIDWARE_TAGS = %w(main volatile)
+
 def do_gridware_import
   import_gridware_from_url(GRIDWARE_MAIN_URL, 'main')
   import_gridware_from_url(GRIDWARE_VOLATILE_URL, 'volatile')
@@ -27,7 +29,7 @@ def import_gridware_from_url(url, repo_name_for_tag)
       puts "Processing #{repo_name_for_tag}/#{pkg_name}/#{pkg_version}"
       gp = GridwarePackage.from_metadata(metadata, alces,pkg_name, pkg_version)
       gp.save!
-      unless gp.tags.include?(tag)
+      if (gp.tag_names & GRIDWARE_TAGS).empty?  # Don't re-tag packages from main as volatile also
         gp.tags << tag
       end
     end
