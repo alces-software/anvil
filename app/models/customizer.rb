@@ -1,8 +1,7 @@
 class Customizer < ApplicationRecord
-  belongs_to :user
+  include Taggable
 
-  has_many :taggings, as: :taggable
-  has_many :tags, through: :taggings
+  belongs_to :user
 
   validates :name,
             presence: true,

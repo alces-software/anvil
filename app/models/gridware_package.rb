@@ -1,8 +1,6 @@
 class GridwarePackage < ApplicationRecord
+  include Taggable
   belongs_to :user
-
-  has_many :taggings, as: :taggable
-  has_many :tags, through: :taggings
 
   GRIDWARE_PACKAGE_TYPES = %w(apps libs compilers mpi ext)
 

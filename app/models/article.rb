@@ -1,8 +1,7 @@
 class Article < ApplicationRecord
-  belongs_to :user
+  include Taggable
 
-  has_many :taggings, as: :taggable
-  has_many :tags, through: :taggings
+  belongs_to :user
 
   def summary
     if text.length <= 255
