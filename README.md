@@ -7,10 +7,13 @@ For the first time:
  `Dockerfile`:
  `dokku config:set <app> BUILDPACK_URL=https://github.com/heroku/heroku-buildpack-ruby.git`
  - Run `dokku run <app> rake db:setup` to initialise the database
-   - Todo: for now the `alces` user isn't created properly, so you'll need to fix one up
-   manually via `dokku run <app> rails console`. Be sure to call `confirm` on the `User`.
+ - Run `dokku run <app> rails console` and create an `alces` user. You'll need to assign
+ a `flight_id` that matches the `alces` user on the Flight SSO service you'll be using.
+   - Or, if you can assume that `alces` will never actually log in, you can use an empty
+   `flight_id`.
  - Set a secret for creating JSON Web Tokens:
      `dokku config:set <app> JSON_WEB_TOKEN_SECRET=<somesecret>`
+   Note, this should be shared with the Flight SSO service!
  - Add Git remote and push to Dokku
  - Add a domain e.g. `dokku domains:add <app> domain.alces-flight.com`
  - Set up SSL. I've used the `dokku-letsencrypt` plugin for now at least:
