@@ -24,7 +24,7 @@ class ApplicationController < ActionController::Base
 
     return nil unless token.present?
 
-    User.from_jwt_token(token)
+    User.from_jwt_token(token) rescue nil
 
   end
 
