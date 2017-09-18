@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170907114137) do
+ActiveRecord::Schema.define(version: 20170918103406) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -22,6 +22,20 @@ ActiveRecord::Schema.define(version: 20170907114137) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.uuid "user_id", null: false
+  end
+
+  create_table "collection_memberships", force: :cascade do |t|
+    t.uuid "collection_id", null: false
+    t.uuid "collectable_id"
+    t.string "collectable_type"
+    t.index ["collectable_id", "collectable_type"], name: "collection_members_idx"
+  end
+
+  create_table "collections", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.uuid "user_id", null: false
+    t.string "name", limit: 512, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "customizers", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
@@ -65,8 +79,10 @@ ActiveRecord::Schema.define(version: 20170907114137) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "email", default: "", null: false
-    t.uuid "flight_id", null: false
+    t.uuid "flight_id", default: "09cff8a7-48c6-4cbd-b33b-e5babfb47af5", null: false
     t.index ["name"], name: "index_users_on_name", unique: true
   end
 
+  add_foreign_key "collection_memberships", "collections"
+  add_foreign_key "collections", "users"
 end
