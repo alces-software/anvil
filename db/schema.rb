@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170918103406) do
+ActiveRecord::Schema.define(version: 20170918113246) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -83,6 +83,10 @@ ActiveRecord::Schema.define(version: 20170918103406) do
     t.index ["name"], name: "index_users_on_name", unique: true
   end
 
+  add_foreign_key "articles", "users"
   add_foreign_key "collection_memberships", "collections"
   add_foreign_key "collections", "users"
+  add_foreign_key "customizers", "users"
+  add_foreign_key "gridware_packages", "users"
+  add_foreign_key "taggings", "tags"
 end
