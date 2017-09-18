@@ -1,13 +1,13 @@
 class ApplicationController < ActionController::Base
 
   rescue_from CanCan::AccessDenied do |exception|
-    errorObject = {
+    error_object = {
         title: 'Forbidden',
         detail: exception.message,
         code: 'forbidden',
         status: 403
     }
-    render json: {errors: [errorObject]}, status: :forbidden
+    render json: {errors: [error_object]}, status: :forbidden
   end
 
   def current_ability
