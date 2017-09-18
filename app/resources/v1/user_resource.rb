@@ -6,6 +6,8 @@ module V1
     has_many :customizers, always_include_linkage_data: true
     has_many :gridware, always_include_linkage_data: true
 
+    has_many :collections, always_include_linkage_data: true
+
     key_type :string
 
     UUID_REGEX = /[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/
