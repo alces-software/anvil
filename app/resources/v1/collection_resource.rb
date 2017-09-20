@@ -5,7 +5,7 @@ module V1
 
     has_one :user
 
-    has_many :gridware
+    has_many :gridware, class_name: 'Gridware'
     has_many :customizers
   end
 end

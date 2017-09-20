@@ -13,8 +13,7 @@ class Collection < ApplicationRecord
 
   has_many :collection_memberships
 
-  has_many :gridware_packages, through: :collection_memberships, source: :collectable, source_type: 'GridwarePackage'
-  alias_attribute :gridware, :gridware_packages
+  has_many :gridware, class_name: 'GridwarePackage', through: :collection_memberships, source: :collectable, source_type: 'GridwarePackage'
 
   has_many :customizers, through: :collection_memberships, source: :collectable, source_type: 'Customizer'
 end
