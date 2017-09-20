@@ -7,5 +7,9 @@ module V1
 
     has_many :gridware, class_name: 'Gridware'
     has_many :customizers
+
+    before_save do
+      @model.user_id = context[:current_user].id if @model.new_record?
+    end
   end
 end
