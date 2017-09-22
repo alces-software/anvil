@@ -2,6 +2,8 @@ module V1
   class UserResource < ResourceBase
     attributes :name
 
+    filter :flight_id
+
     has_many :articles, always_include_linkage_data: true
     has_many :customizers, always_include_linkage_data: true
     has_many :gridware, always_include_linkage_data: true
