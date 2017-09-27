@@ -4,12 +4,10 @@ class User < ApplicationRecord
 
   has_many :articles
   has_many :customizers
-  has_many :gridware_packages
+  has_many :gridware, class_name: 'GridwarePackage'
   has_many :collections
 
   validates :name, uniqueness: true
-
-  alias_attribute :gridware, :gridware_packages
 
   def self.from_jwt_token(token)
     claims = ::JsonWebToken.decode(token)  # handles signature verification too
