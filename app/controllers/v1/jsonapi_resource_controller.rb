@@ -4,6 +4,7 @@ module V1
 
     def context
       {
+          abridged: params.has_key?(:abridged),
           current_ability: current_ability,
           current_user: current_user,
       }

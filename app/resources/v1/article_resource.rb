@@ -10,6 +10,14 @@ module V1
 
     has_one :user
 
+    def fetchable_fields
+      if context[:abridged]
+        super - [:text]
+      else
+        super
+      end
+    end
+
     def self.updatable_fields(context)
       super - [:summary]
     end
