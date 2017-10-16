@@ -18,6 +18,11 @@ namespace :customizer do
         ).first_or_create
         customizer.s3_url = "#{S3_BASE_URL}/#{name}"
         customizer.save!
+
+        if profile.include?('tags')
+          customizer.tags = profile['tags'].map { |tag| Tag.get_or_create(tag) }
+        end
+
       else
         puts "Skipping hidden profile #{name}"
       end
