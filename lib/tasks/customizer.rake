@@ -3,9 +3,10 @@ require 'yaml'
 
 namespace :customizer do
 
-  S3_BASE_URL = 'https://s3-eu-west-1.amazonaws.com/alces-flight-profiles-eu-west-1/2017.1/features'
+  S3_BASE_URL = ENV['S3_BASE_URL'] || 'https://s3-eu-west-1.amazonaws.com/alces-flight-profiles-eu-west-1/2017.1/features'
 
   def do_customizer_import
+    puts "Using S3 base URL #{S3_BASE_URL}"
     index = YAML.load(open("#{S3_BASE_URL}/index.yml") { |f| f.read })
 
     alces = User.find_by_name('alces')
@@ -17,6 +18,8 @@ namespace :customizer do
             name: name
         ).first_or_create
         customizer.s3_url = "#{S3_BASE_URL}/#{name}"
+        customizer.description = profile['description']
+        customizer.summary = profile['description']
         customizer.save!
 
         if profile.include?('tags')
