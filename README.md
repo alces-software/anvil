@@ -27,3 +27,20 @@ For the first time:
       
 Subsequent times: TBC but something like push, migrate, ???, profit (is it clever enough
 to migrate automatically?)
+
+## Updating customizers
+
+You can change where Anvil looks for customizer profiles by setting the `S3_BASE_URL`
+environment variable before running `rake customizer:update` (or `:import`).
+
+e.g.
+
+```bash
+S3_BASE_URL=https://s3-eu-west-1.amazonaws.com/alces-flight-profiles-eu-west-1/develop/features bin/rake customizer update
+``` 
+
+Note that matching is done on (user, name) so existing customizer items will have their S3
+URLs replaced with the new one. (We don't yet - 2017-10-23 - use that URL for anything, so
+this isn't very important right now. In general we need to think about versioning - both of
+content items such as Gridware and customizers, and also in terms of Clusterware version
+compatibilities.)
