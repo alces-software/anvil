@@ -24,6 +24,11 @@ class GridwarePackage < ApplicationRecord
                 maximum: 64
             }
 
+  validates :licence,
+            length: {
+                maximum: 255
+            }
+
   # Update or create record in database from given metadata and user.
   def self.from_metadata(md, user, name_fallback='', version_fallback='')
     GridwarePackage.where(
@@ -38,6 +43,7 @@ class GridwarePackage < ApplicationRecord
       gp.description = md[:description]
       gp.group = md[:group]
       gp.changelog = md[:changelog]
+      gp.licence = md[:license] # (sic)
     }
   end
 
