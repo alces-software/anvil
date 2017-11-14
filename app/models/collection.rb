@@ -11,9 +11,6 @@ class Collection < ApplicationRecord
                 scope: :user
             }
 
-  has_many :collection_memberships
+  has_many :packages, through: :collection_memberships
 
-  has_many :gridware, class_name: 'GridwarePackage', through: :collection_memberships, source: :collectable, source_type: 'GridwarePackage'
-
-  has_many :customizers, through: :collection_memberships, source: :collectable, source_type: 'Customizer'
 end

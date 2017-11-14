@@ -5,9 +5,6 @@ module V1
 
     has_one :user
 
-    has_many :gridware, class_name: 'Gridware', always_include_linkage_data: true
-    has_many :customizers, always_include_linkage_data: true
-
     before_save do
       @model.user_id = context[:current_user].id if @model.new_record?
     end

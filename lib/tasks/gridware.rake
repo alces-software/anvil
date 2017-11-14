@@ -27,11 +27,14 @@ def import_gridware_from_url(url, repo_name_for_tag)
       pkg_version = metadata[:version] || path[-2]
 
       puts "Processing #{repo_name_for_tag}/#{pkg_name}/#{pkg_version}"
+=begin
       gp = GridwarePackage.from_metadata(metadata, alces,pkg_name, pkg_version)
       gp.save!
       if (gp.tag_names & GRIDWARE_TAGS).empty?  # Don't re-tag packages from main as volatile also
         gp.tags << tag
       end
+=end
+      puts 'Gridware import not implemented yet!'
     end
   end
 end

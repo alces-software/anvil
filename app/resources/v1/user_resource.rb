@@ -5,8 +5,6 @@ module V1
     filter :flight_id
 
     has_many :articles, always_include_linkage_data: true
-    has_many :customizers, always_include_linkage_data: true
-    has_many :gridware, class_name: 'Gridware', always_include_linkage_data: true
     has_many :packages, always_include_linkage_data: true
 
     has_many :collections, always_include_linkage_data: true

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20171114151258) do
+ActiveRecord::Schema.define(version: 20171114154653) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -26,9 +26,8 @@ ActiveRecord::Schema.define(version: 20171114151258) do
 
   create_table "collection_memberships", force: :cascade do |t|
     t.uuid "collection_id", null: false
-    t.uuid "collectable_id"
-    t.string "collectable_type"
-    t.index ["collectable_id", "collectable_type"], name: "collection_members_idx"
+    t.uuid "package_id"
+    t.index ["collection_id", "package_id"], name: "index_collection_memberships_on_collection_id_and_package_id", unique: true
   end
 
   create_table "collections", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
@@ -36,33 +35,6 @@ ActiveRecord::Schema.define(version: 20171114151258) do
     t.string "name", limit: 512, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-  end
-
-  create_table "customizers", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
-    t.string "name", limit: 512, null: false
-    t.string "description"
-    t.uuid "user_id"
-    t.string "s3_url", null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.string "summary"
-    t.index ["name", "user_id"], name: "index_customizers_on_name_and_user_id", unique: true
-  end
-
-  create_table "gridware_packages", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
-    t.string "name", null: false
-    t.string "group"
-    t.string "version", null: false
-    t.string "summary"
-    t.string "url"
-    t.string "description"
-    t.string "package_type", null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.uuid "user_id"
-    t.text "changelog"
-    t.string "licence", limit: 255
-    t.index ["name", "version", "package_type"], name: "index_gridware_packages_on_name_and_version_and_package_type", unique: true
   end
 
   create_table "packages", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
@@ -101,8 +73,7 @@ ActiveRecord::Schema.define(version: 20171114151258) do
 
   add_foreign_key "articles", "users"
   add_foreign_key "collection_memberships", "collections"
+  add_foreign_key "collection_memberships", "packages"
   add_foreign_key "collections", "users"
-  add_foreign_key "customizers", "users"
-  add_foreign_key "gridware_packages", "users"
   add_foreign_key "taggings", "tags"
 end

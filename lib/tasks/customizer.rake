@@ -13,6 +13,7 @@ namespace :customizer do
 
     index['profiles'].each do |name, profile|
       if !profile.include?('tags') || !profile['tags'].include?('hidden')
+=begin
         customizer = Customizer.where(
             user: alces,
             name: name
@@ -25,6 +26,8 @@ namespace :customizer do
         if profile.include?('tags')
           customizer.tags = profile['tags'].map { |tag| Tag.get_or_create(tag) }
         end
+=end
+        puts 'Customizer import not implemented yet!'
 
       else
         puts "Skipping hidden profile #{name}"
