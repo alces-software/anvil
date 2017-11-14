@@ -8,6 +8,8 @@ Rails.application.routes.draw do
 
     jsonapi_resources :gridware
 
+    jsonapi_resources :packages
+
     jsonapi_resources :users
 
     get 'search', to: 'search#search'
