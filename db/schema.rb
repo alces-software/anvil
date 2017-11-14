@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20171114103802) do
+ActiveRecord::Schema.define(version: 20171114151258) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -76,7 +76,8 @@ ActiveRecord::Schema.define(version: 20171114103802) do
     t.string "package_url", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["name", "user_id"], name: "index_packages_on_name_and_user_id", unique: true
+    t.string "version"
+    t.index ["name", "version", "user_id"], name: "index_packages_on_name_and_version_and_user_id", unique: true
   end
 
   create_table "taggings", force: :cascade do |t|

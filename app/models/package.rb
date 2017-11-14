@@ -6,9 +6,11 @@ class Package < ApplicationRecord
             presence: true,
             length: {
                 maximum: 512
-            },
+            }
+
+  validates :version,
             uniqueness: {
-                scope: [:user]
+                scope: [:user, :name]
             }
 
   validates :licence,

@@ -5,7 +5,7 @@ module V1
 
     attributes :name, :summary, :description,
                :changelog, :licence, :tag_names,
-               :package_url, :website
+               :package_url, :website, :version
 
     attributes :updated_at, :created_at
 
