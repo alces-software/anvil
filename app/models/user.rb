@@ -5,6 +5,7 @@ class User < ApplicationRecord
   has_many :articles
   has_many :customizers
   has_many :gridware, class_name: 'GridwarePackage'
+  has_many :packages
   has_many :collections
 
   validates :name, uniqueness: true
