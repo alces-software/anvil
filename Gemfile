@@ -19,6 +19,7 @@ gem 'jsonapi-resources'
 gem 'rack-cors'
 
 gem 'rubyzip', '>= 1.0.0'
+gem 'aws-sdk-s3'
 
 # Use Rack CORS for handling Cross-Origin Resource Sharing (CORS), making cross-origin AJAX possible
 # gem 'rack-cors'

@@ -1,41 +1,108 @@
+require 'aws-sdk-s3'
 require 'open-uri'
 require 'yaml'
 require 'zip'
 
-GRIDWARE_MAIN_URL = 'https://github.com/alces-software/gridware-packages-main/archive/master.zip'
-GRIDWARE_VOLATILE_URL = 'https://github.com/alces-software/packager-base/archive/master.zip'
+module GridwareImport
 
-GRIDWARE_TAGS = %w(main volatile)
+  GRIDWARE_MAIN_URL = 'https://github.com/alces-software/gridware-packages-main'
+  GRIDWARE_VOLATILE_URL = 'https://github.com/alces-software/packager-base'
 
-def do_gridware_import
-  import_gridware_from_url(GRIDWARE_MAIN_URL, 'main')
-  import_gridware_from_url(GRIDWARE_VOLATILE_URL, 'volatile')
-end
+  GRIDWARE_TAGS = %w(main volatile)
 
-def import_gridware_from_url(url, repo_name_for_tag)
-  remote_zip = open(url)
-  alces = User.find_by_name('alces')
-  tag = Tag.get_or_create(repo_name_for_tag)
+  def self.do_gridware_import
+    check_env
 
-  ::Zip::File.open_buffer(remote_zip) do | zipfile |
-    metadata_files = zipfile.glob('**/metadata.yml')
-    metadata_files.each do |mdf|
-      metadata = YAML.load(mdf.get_input_stream.read)
-      path = mdf.name.split('/')
+    Aws.config.update({
+        region: 'eu-west-1'
+    })
 
-      pkg_name = metadata[:title] || path[-3]
-      pkg_version = metadata[:version] || path[-2]
+    import_gridware_from_url(GRIDWARE_MAIN_URL, 'main')
+    import_gridware_from_url(GRIDWARE_VOLATILE_URL, 'volatile')
+  end
 
-      puts "Processing #{repo_name_for_tag}/#{pkg_name}/#{pkg_version}"
-=begin
-      gp = GridwarePackage.from_metadata(metadata, alces,pkg_name, pkg_version)
-      gp.save!
-      if (gp.tag_names & GRIDWARE_TAGS).empty?  # Don't re-tag packages from main as volatile also
-        gp.tags << tag
-      end
-=end
-      puts 'Gridware import not implemented yet!'
+  private
+
+  def self.check_env
+    if !ENV['AWS_ACCESS_KEY_ID'] || !ENV['AWS_SECRET_ACCESS_KEY'] || !ENV['AWS_FORGE_ROOT_BUCKET']
+      raise 'Need to specify AWS credentials: AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, AWS_FORGE_ROOT_BUCKET'
     end
+  end
+
+  def self.import_gridware_from_url(url, repo_name_for_tag)
+    remote_zip = open("#{url}/archive/master.zip")
+    alces = User.find_by_name('alces')
+    tag = Tag.get_or_create(repo_name_for_tag)
+
+    ::Zip::File.open_buffer(remote_zip) do | zipfile |
+      metadata_files = zipfile.glob('**/metadata.yml')
+      metadata_files.each do |mdf|
+        metadata = YAML.load(mdf.get_input_stream.read)
+        path = mdf.name.split('/').drop(1)
+
+        if path[0] == 'pkg'  # Only true in `gridware-packages-main` repository
+          path = path.drop(1)
+        end
+
+        pkg_name = path[1]
+        pkg_version = metadata[:version] || path[-2]
+
+        puts "Processing #{repo_name_for_tag}: alces/#{pkg_name}/#{pkg_version} (Gridware #{path[0..-2].join('/')})"
+
+        package = Package.where(
+                             user: alces,
+                             name: pkg_name,
+                             version: pkg_version
+        ).first_or_create
+
+        package.summary = metadata[:summary]
+        package.description = metadata[:description]
+        package.changelog = metadata[:changelog]
+        package.licence = metadata[:license]
+        package.website = metadata[:url]
+        package.package_url = create_and_upload_package(package, url, path[0..-2].join('/'))
+
+        package.save!  # We need to save so that package gets an ID before we try and tag it
+
+        if (package.tag_names & GRIDWARE_TAGS).empty?  # Don't re-tag packages from main as volatile also
+          package.tags << tag
+          package.save!
+        end
+
+      end
+    end
+  end
+
+  def self.create_and_upload_package(package, repo_url, package_path)
+    s3_object_name = "#{package.user.name}/#{package.name}/#{package.version}.zip"
+
+    tempfile = Tempfile.new('forge-gridware-generator')
+    begin
+      ::Zip::File.open(tempfile.path, ::Zip::File::CREATE) do |zipfile|
+        zipfile.get_output_stream('install.sh') do |f|
+          f.write(create_installer_script(repo_url, package_path))
+        end
+      end
+
+      s3 = Aws::S3::Resource.new
+      bucket = s3.bucket(ENV['AWS_FORGE_ROOT_BUCKET'])
+      obj = bucket.object(s3_object_name)
+      obj.upload_file(tempfile.path)
+      obj.acl.put({ acl: 'public-read' })
+
+      return obj.public_url
+
+    ensure
+      tempfile.close
+      tempfile.unlink
+    end
+  end
+
+  def self.create_installer_script(repo_url, package_path)
+    """#!/bin/bash
+# Automatically generated Gridware Forge install script
+cw_FORGE_GRIDWARE_SOURCE=#{repo_url} ${cw_ROOT}/bin/alces gridware install #{package_path}
+"""
   end
 end
 
@@ -46,12 +113,12 @@ namespace :gridware do
 
     GridwarePackage.delete_all
 
-    do_gridware_import
+    GridwareImport.do_gridware_import
 
   end
 
   desc 'Update Gridware packages by importing metadata from GitHub'
   task :update => :environment do
-      do_gridware_import
+      GridwareImport.do_gridware_import
   end
 end

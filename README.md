@@ -14,6 +14,8 @@ For the first time:
  - Set a secret for creating JSON Web Tokens:
      `dokku config:set <app> JSON_WEB_TOKEN_SECRET=<somesecret>`
    Note, this should be shared with the Flight SSO service!
+ - Set environment variables for `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY` and
+ `AWS_FORGE_ROOT_BUCKET` so Anvil can talk to S3
  - Add Git remote and push to Dokku
  - Add a domain e.g. `dokku domains:add <app> domain.alces-flight.com`
  - Set up SSL. I've used the `dokku-letsencrypt` plugin for now at least:
