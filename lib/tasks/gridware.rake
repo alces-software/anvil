@@ -99,10 +99,11 @@ module GridwareImport
   end
 
   def self.create_installer_script(repo_url, package_path)
-    """#!/bin/bash
+    <<END
+#!/bin/bash
 # Automatically generated Gridware Forge install script
 cw_FORGE_GRIDWARE_SOURCE=#{repo_url} ${cw_ROOT}/bin/alces gridware install #{package_path}
-"""
+END
   end
 end
 
