@@ -108,17 +108,8 @@ end
 
 namespace :gridware do
 
-  desc 'Erase current Gridware packages and reimport metadata from GitHub'
+  desc 'Import new Gridware packages, and update existing packages, via metadata from GitHub'
   task :import => :environment do
-
-    GridwarePackage.delete_all
-
-    GridwareImport.do_gridware_import
-
-  end
-
-  desc 'Update Gridware packages by importing metadata from GitHub'
-  task :update => :environment do
       GridwareImport.do_gridware_import
   end
 end
