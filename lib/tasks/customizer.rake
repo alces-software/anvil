@@ -42,7 +42,7 @@ module CustomizerImport
           target_object_name = "#{package.user.name}/#{package.name}/#{package.version}.zip"
           tempfile = Tempfile.new('forge-customizer-generator')
           begin
-            zip_profile(tempfile, source_url)
+            zip_profile(tempfile, source_url, package)
 
             package.package_url = upload_profile(tempfile, target_object_name)
 
@@ -79,13 +79,13 @@ module CustomizerImport
       matches[1..3]
     end
 
-    def zip_profile(tempfile, source_url)
+    def zip_profile(tempfile, source_url, package)
       region, bucket_name, prefix = uri_to_components(source_url)
 
       begin
         ::Zip::File.open(tempfile.path, ::Zip::File::CREATE) do |zipfile|
           zipfile.get_output_stream('install.sh') do |f|
-            f.write(create_installer_script)
+            f.write(create_installer_script, package)
           end
 
           list_profile_components(region, bucket_name, prefix).each do |source_file|
@@ -112,7 +112,41 @@ module CustomizerImport
         <<END
 #!/bin/bash
 # Automatically generated customizer Forge install script
-echo "TODO! Implementme"
+
+require customize
+require files
+require member
+files_load_config cluster-customizer
+cw_CLUSTER_CUSTOMIZER_path="${cw_CLUSTER_CUSTOMIZER_path:-${cw_ROOT}/var/lib/customizer}"
+
+_run_member_hooks() {
+    local event name ip
+    members="$1"
+    event="$2"
+    shift 3
+    name="$1"
+    ip="$2"
+    if [[ -z "${members}" || ,"$members", == *,"${name}",* ]]; then
+       customize_run_hooks "${event}" \
+                           "${cw_MEMBER_DIR}"/"${name}" \
+                           "${name}" \
+                           "${ip}"
+    fi
+}
+
+repo_name='forge'
+profile_name="#{package.user.name}-#{package.name}-#{package.version}"
+destination_dir="${cw_CLUSTER_CUSTOMIZER_path}/${repo_name}-${profile_name}"
+cp -r . "$destination_dir"
+
+# The following mirrors `customize-repository.functions.sh#customize_repository_apply()`
+chmod -R a+x "${destination_dir}/"*.d
+
+echo "Running event hooks for $profile_name"
+customize_run_hooks "configure:$repo_name-$profile_name"
+customize_run_hooks "start:$repo_name-$profile_name"
+customize_run_hooks "node-started:$repo_name-$profile_name"
+member_each _run_member_hooks "${members}" "member-join:$repo_name-$profile_name"
 END
       end
 
