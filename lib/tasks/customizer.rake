@@ -1,50 +1,131 @@
+require 'aws-sdk-s3'
 require 'open-uri'
 require 'yaml'
 
-namespace :customizer do
+module CustomizerImport
+  class << self
 
-  S3_BASE_URL = ENV['S3_BASE_URL'] || 'https://s3-eu-west-1.amazonaws.com/alces-flight-profiles-eu-west-1/2017.1/features'
+    CUSTOMIZER_SOURCE_BASE_URL = ENV['CUSTOMIZER_SOURCE_BASE_URL'] || 'https://s3-eu-west-1.amazonaws.com/alces-flight-profiles-eu-west-1/2017.1/features'
 
-  def do_customizer_import
-    puts "Using S3 base URL #{S3_BASE_URL}"
-    index = YAML.load(open("#{S3_BASE_URL}/index.yml") { |f| f.read })
-
-    alces = User.find_by_name('alces')
-
-    index['profiles'].each do |name, profile|
-      if !profile.include?('tags') || !profile['tags'].include?('hidden')
-=begin
-        customizer = Customizer.where(
-            user: alces,
-            name: name
-        ).first_or_create
-        customizer.s3_url = "#{S3_BASE_URL}/#{name}"
-        customizer.description = profile['description']
-        customizer.summary = profile['description']
-        customizer.save!
-
-        if profile.include?('tags')
-          customizer.tags = profile['tags'].map { |tag| Tag.get_or_create(tag) }
-        end
-=end
-        puts 'Customizer import not implemented yet!'
-
-      else
-        puts "Skipping hidden profile #{name}"
+    def check_env
+      if !ENV['AWS_ACCESS_KEY_ID'] || !ENV['AWS_SECRET_ACCESS_KEY'] || !ENV['AWS_FORGE_ROOT_BUCKET']
+        raise 'Need to specify AWS credentials: AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, AWS_FORGE_ROOT_BUCKET'
       end
     end
-  end
 
-  desc 'Delete existing and import Alces feature profiles into Forge'
+    def do_customizer_import
+      check_env
+
+      Aws.config.update({
+        region: 'eu-west-1'
+      })
+
+      version = CUSTOMIZER_SOURCE_BASE_URL.split('/')[-2]
+
+      puts "Using S3 base URL #{CUSTOMIZER_SOURCE_BASE_URL} as customizer source (inferred version: #{version})"
+
+      index = YAML.load(open("#{CUSTOMIZER_SOURCE_BASE_URL}/index.yml") { |f| f.read })
+
+      alces = User.find_by_name('alces')
+
+      index['profiles'].each do |name, profile|
+        if !profile.include?('tags') || !profile['tags'].include?('hidden')
+          source_url = "#{CUSTOMIZER_SOURCE_BASE_URL}/#{name}"
+          puts "Processing #{source_url}"
+
+          package = Package.where(
+              user: alces,
+              name: name,
+              version: version
+          ).first_or_create
+
+          target_object_name = "#{package.user.name}/#{package.name}/#{package.version}.zip"
+          tempfile = Tempfile.new('forge-customizer-generator')
+          begin
+            zip_profile(tempfile, source_url)
+
+            package.package_url = upload_profile(tempfile, target_object_name)
+
+          ensure
+            tempfile.close
+            tempfile.unlink
+          end
+
+          package.description = profile['description']
+          package.summary = profile['description']
+          package.save!
+
+          if profile.include?('tags')
+            package.tags = profile['tags'].map { |tag| Tag.get_or_create(tag) }
+          end
+
+        else
+          puts "Skipping hidden profile #{name}"
+        end
+      end
+    end
+
+    private
+
+    def list_profile_components(region, bucket_name, prefix)
+      s3 = Aws::S3::Resource.new({region: region})
+      bucket = s3.bucket(bucket_name)
+
+      bucket.objects({ prefix: prefix })
+    end
+
+    def uri_to_components(uri)
+      matches = /^https:\/\/s3-([^\/\.]+)\.[^\/]*\/([^\/]*)\/(.*)$/.match(uri)
+      matches[1..3]
+    end
+
+    def zip_profile(tempfile, source_url)
+      region, bucket_name, prefix = uri_to_components(source_url)
+
+      begin
+        ::Zip::File.open(tempfile.path, ::Zip::File::CREATE) do |zipfile|
+          zipfile.get_output_stream('install.sh') do |f|
+            f.write(create_installer_script)
+          end
+
+          list_profile_components(region, bucket_name, prefix).each do |source_file|
+            filename = source_file.key[prefix.length + 1..-1]
+            zipfile.get_output_stream(filename) do |f|
+              f.write(source_file.get.body.read)
+            end
+          end
+        end
+      end
+    end
+
+    def upload_profile(tempfile, s3_object_name)
+      s3 = Aws::S3::Resource.new
+      bucket = s3.bucket(ENV['AWS_FORGE_ROOT_BUCKET'])
+      obj = bucket.object(s3_object_name)
+      obj.upload_file(tempfile.path)
+      obj.acl.put({ acl: 'public-read' })
+
+      obj.public_url
+    end
+
+      def create_installer_script
+        <<END
+#!/bin/bash
+# Automatically generated customizer Forge install script
+echo "TODO! Implementme"
+END
+      end
+
+
+  end
+end
+
+namespace :customizer do
+
+  desc 'Import new and update existing Alces feature profiles into Forge'
   task :import => :environment do
-    alces = User.find_by_name('alces')
-    Customizer.where(user: alces).delete_all
-    do_customizer_import
+    CustomizerImport.do_customizer_import
   end
 
-  desc 'Update Alces feature profiles from S3'
-  task :update => :environment do
-    do_customizer_import
-  end
 
 end
