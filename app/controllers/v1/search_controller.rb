@@ -3,37 +3,24 @@ module V1
     def search
 
       query = params[:q]
-      gridware_packages = GridwarePackage.where('lower(name) LIKE ?', "%#{params[:q].downcase}%").accessible_by(current_ability)
-      customizers = Customizer.where('lower(name) LIKE ?', "%#{params[:q].downcase}%").accessible_by(current_ability)
+      packages = Package.where('lower(name) LIKE ?', "%#{params[:q].downcase}%").accessible_by(current_ability)
       articles = Article.where('lower(title) LIKE ?', "%#{params[:q].downcase}%").accessible_by(current_ability)
       users = User.where('lower(name) LIKE ?', "%#{params[:q].downcase}%").accessible_by(current_ability)
 
       result = {
           query: query,
-          gridware: {},
-          customizers: {},
+          packages: {},
           articles: {},
           users: {}
       }
 
-      gridware_packages.each do |g|
-        result[:gridware][g.id] = {
-            name: g.name,
-            version: g.version,
-            summary: g.summary,
-            tagNames: g.tag_names,
-            username: g.user.name,
-            updatedAt: g.updated_at
-        }
-      end
-
-      customizers.each do |c|
-        result[:customizers][c.id] = {
-            name: c.name,
-            summary: c.summary,
-            tagNames: c.tag_names,
-            username: c.user.name,
-            updatedAt: c.updated_at
+      packages.each do |p|
+        result[:packages][p.id] = {
+          name: p.name,
+          summary: p.summary,
+          version: p.version,
+          description: p.description,
+          username: p.user.name
         }
       end
 
