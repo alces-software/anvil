@@ -102,7 +102,43 @@ module GridwareImport
     <<END
 #!/bin/bash
 # Automatically generated Gridware Forge install script
-cw_FORGE_GRIDWARE_SOURCE=#{repo_url} ${cw_ROOT}/bin/alces gridware install #{package_path}
+cw_FORGE_GRIDWARE_SOURCE=#{repo_url}
+temp_repo=''
+MAGIC_EXIT_CODE=1138
+
+require files
+require ruby
+files_load_config gridware
+
+ruby_run <<RUBY
+
+require 'yaml'
+config = YAML.load_file('${cw_GRIDWARE_root}/etc/gridware.yml')
+
+config[:repo_paths].each do |repo|
+
+  repo_metadata = YAML.load_file("\#{repo}/repo.yml")
+  if repo_metadata[:source] == "${cw_FORGE_GRIDWARE_SOURCE}.git"
+    exit(${MAGIC_EXIT_CODE})
+  end
+
+end
+
+RUBY
+
+if [ $? -ne $MAGIC_EXIT_CODE ] ; then
+  temp_repo=$(mktemp -d -t 'forge-gridware-repo-XXXXXXXX')
+  ${cw_ROOT}/opt/git/bin/git clone -q "$cw_FORGE_GRIDWARE_SOURCE" "$temp_repo"
+fi
+
+cw_FORGE_GRIDWARE_TEMP_REPO="$temp_repo" ${cw_ROOT}/bin/alces gridware install --binary #{package_path}
+result=$?
+
+if [ ! -z "$temp_repo" ] ; then
+  rm -rf "$temp_repo"
+fi
+
+exit $result
 END
   end
 end
