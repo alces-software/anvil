@@ -131,7 +131,7 @@ if [ $? -ne $MAGIC_EXIT_CODE ] ; then
   ${cw_ROOT}/opt/git/bin/git clone -q "$cw_FORGE_GRIDWARE_SOURCE" "$temp_repo"
 fi
 
-cw_FORGE_GRIDWARE_TEMP_REPO="$temp_repo" ${cw_ROOT}/bin/alces gridware install --binary #{package_path}
+cw_FORGE_GRIDWARE_TEMP_REPO="$temp_repo" ${cw_ROOT}/bin/alces gridware install --binary --non-interactive #{package_path}
 result=$?
 
 if [ ! -z "$temp_repo" ] ; then
