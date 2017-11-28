@@ -20,7 +20,8 @@ module V1
           summary: p.summary,
           version: p.version,
           description: p.description,
-          username: p.user.name
+          username: p.user.name,
+          categories: p.category.with_all_parents.map { |c| { name: c.name, id: c.id, parent: c.parent_id } }
         }
       end
 
