@@ -3,7 +3,14 @@ module V1
     def search
 
       query = params[:q]
-      packages = Package.where('lower(name) LIKE ?', "%#{params[:q].downcase}%").accessible_by(current_ability)
+
+      categories = params[:cat].map do |cat|
+        Category.find_by_name(cat) || nil
+      end.compact rescue []
+
+      packages = Package.where('lower(name) LIKE ?', "%#{params[:q].downcase}%").accessible_by(current_ability).select do |pkg|
+        categories.empty? || !(pkg.category.with_all_parents & categories).empty?
+      end
       articles = Article.where('lower(title) LIKE ?', "%#{params[:q].downcase}%").accessible_by(current_ability)
       users = User.where('lower(name) LIKE ?', "%#{params[:q].downcase}%").accessible_by(current_ability)
 
