@@ -4,6 +4,7 @@ class Ability
   def initialize(user)
     # Content and user profiles are public to read
     can :read, Article
+    can :read, Category
     can :read, User
     can :read, Package
 

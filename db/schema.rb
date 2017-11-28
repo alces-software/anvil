@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20171114154653) do
+ActiveRecord::Schema.define(version: 20171128114832) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -22,6 +22,13 @@ ActiveRecord::Schema.define(version: 20171114154653) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.uuid "user_id", null: false
+  end
+
+  create_table "categories", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.string "name", limit: 64, null: false
+    t.uuid "parent_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "collection_memberships", force: :cascade do |t|
@@ -49,6 +56,7 @@ ActiveRecord::Schema.define(version: 20171114154653) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "version"
+    t.uuid "category_id", default: "6b0654b3-bae3-47c9-a2a8-6e75008f0dbc", null: false
     t.index ["name", "version", "user_id"], name: "index_packages_on_name_and_version_and_user_id", unique: true
   end
 
@@ -72,8 +80,10 @@ ActiveRecord::Schema.define(version: 20171114154653) do
   end
 
   add_foreign_key "articles", "users"
+  add_foreign_key "categories", "categories", column: "parent_id"
   add_foreign_key "collection_memberships", "collections"
   add_foreign_key "collection_memberships", "packages"
   add_foreign_key "collections", "users"
+  add_foreign_key "packages", "categories"
   add_foreign_key "taggings", "tags"
 end

@@ -1,6 +1,7 @@
 class Package < ApplicationRecord
   include Taggable
   belongs_to :user
+  belongs_to :category
 
   validates :name,
             presence: true,

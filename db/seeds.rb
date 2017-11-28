@@ -7,3 +7,6 @@
 #   Character.create(name: 'Luke', movie: movies.first)
 
 User.create(name: 'alces')
+
+Category.create(name: 'Software')
+Category.create(name: 'Config')

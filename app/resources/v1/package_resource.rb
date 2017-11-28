@@ -10,6 +10,7 @@ module V1
     attributes :updated_at, :created_at
 
     has_one :user
+    has_one :category
 
     filters :name, :version
     filter :username, apply: ->(records, value, _options) {
