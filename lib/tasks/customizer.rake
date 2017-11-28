@@ -85,7 +85,7 @@ module CustomizerImport
       begin
         ::Zip::File.open(tempfile.path, ::Zip::File::CREATE) do |zipfile|
           zipfile.get_output_stream('install.sh') do |f|
-            f.write(create_installer_script, package)
+            f.write(create_installer_script(package))
           end
 
           list_profile_components(region, bucket_name, prefix).each do |source_file|
@@ -108,7 +108,7 @@ module CustomizerImport
       obj.public_url
     end
 
-      def create_installer_script
+      def create_installer_script(package)
         <<END
 #!/bin/bash
 # Automatically generated customizer Forge install script
