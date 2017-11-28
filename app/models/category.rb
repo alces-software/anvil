@@ -8,4 +8,14 @@ class Category < ApplicationRecord
                 maximum: 64
             }
 
+  def with_all_parents
+    collector = []
+    current = self
+
+    while current
+      collector << current
+      current = current.parent
+    end
+    collector
+  end
 end

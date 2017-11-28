@@ -5,14 +5,8 @@ module V1
     has_many :ancestors, class_name: 'Category', always_include_linkage_data: true
 
     def records_for_ancestors(options)
-      collector = []
-      current = @model.parent
-
-      while current
-        collector << current
-        current = current.parent
-      end
-      collector
+      _, *ancestors = *@model.with_all_parents  # We want all but the head of the array
+      ancestors
     end
   end
 end
