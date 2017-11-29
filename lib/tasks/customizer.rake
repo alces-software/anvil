@@ -28,6 +28,10 @@ module CustomizerImport
 
       alces = User.find_by_name('alces')
 
+      config_cat = Category.where(name: 'Config').first_or_create
+      software_cat = Category.where(name: 'Software').first_or_create
+      scheduler_cat = Category.where(name: 'Schedulers', parent: software_cat).first_or_create
+
       index['profiles'].each do |name, profile|
         if !profile.include?('tags') || !profile['tags'].include?('hidden')
           source_url = "#{CUSTOMIZER_SOURCE_BASE_URL}/#{name}"
@@ -56,7 +60,17 @@ module CustomizerImport
           package.save!
 
           if profile.include?('tags')
-            package.tags = profile['tags'].map { |tag| Tag.get_or_create(tag) }
+
+            tags = profile['tags']
+            package.tags = tags.map { |tag| Tag.get_or_create(tag) }
+            if tags.include?('scheduler')
+              package.category = scheduler_cat
+            elsif tags.include?('software')
+              package.category = software_cat
+            elsif tags.include?('config')
+              package.category = config_cat
+            end
+            package.save
           end
 
         else
