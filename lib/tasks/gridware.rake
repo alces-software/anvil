@@ -34,6 +34,8 @@ module GridwareImport
     alces = User.find_by_name('alces')
     tag = Tag.get_or_create(repo_name_for_tag)
 
+    software_cat = Category.where(name: 'Software').first_or_create
+
     ::Zip::File.open_buffer(remote_zip) do | zipfile |
       metadata_files = zipfile.glob('**/metadata.yml')
       metadata_files.each do |mdf|
@@ -61,6 +63,7 @@ module GridwareImport
         package.licence = metadata[:license]
         package.website = metadata[:url]
         package.package_url = create_and_upload_package(package, url, path[0..-2].join('/'))
+        package.category = Category.where(name: metadata[:group], parent: software_cat).first_or_create
 
         package.save!  # We need to save so that package gets an ID before we try and tag it
 
