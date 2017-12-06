@@ -106,35 +106,41 @@ module GridwareImport
 #!/bin/bash
 # Automatically generated Gridware Forge install script
 cw_FORGE_GRIDWARE_SOURCE=#{repo_url}
-temp_repo=''
-MAGIC_EXIT_CODE=1138
 
-require files
-require ruby
-files_load_config gridware
-
-ruby_run <<RUBY
-
-require 'yaml'
-config = YAML.load_file('${cw_GRIDWARE_root}/etc/gridware.yml')
-
-config[:repo_paths].each do |repo|
-
-  repo_metadata = YAML.load_file("\#{repo}/repo.yml")
-  if repo_metadata[:source] == "${cw_FORGE_GRIDWARE_SOURCE}.git"
-    exit(${MAGIC_EXIT_CODE})
+_get_repo_name() {
+  # Check to see under what name (if any) the desired Gridware repo is configured locally.
+  require files
+  require ruby
+  files_load_config gridware
+  
+  ruby_run <<RUBY
+  
+  require 'yaml'
+  config = YAML.load_file('${cw_GRIDWARE_root}/etc/gridware.yml')
+  
+  config[:repo_paths].each do |repo|
+  
+    repo_metadata = YAML.load_file("\#{repo}/repo.yml")
+    if repo_metadata[:source] == "${cw_FORGE_GRIDWARE_SOURCE}.git"
+      puts File.basename(repo)
+    end
+  
   end
 
-end
-
 RUBY
+}
 
-if [ $? -ne $MAGIC_EXIT_CODE ] ; then
+repo_name="$(_get_repo_name)"
+
+if [ -z "$repo_name" ] ; then
+  # Desired repo is not configured locally; let's install it ourselves.
   temp_repo=$(mktemp -d -t 'forge-gridware-repo-XXXXXXXX')
-  ${cw_ROOT}/opt/git/bin/git clone -q "$cw_FORGE_GRIDWARE_SOURCE" "$temp_repo"
+  ${cw_ROOT}/opt/git/bin/git clone -q "$cw_FORGE_GRIDWARE_SOURCE" "$temp_repo/pkg"
+  date --iso-8601=seconds > "$temp_repo/.last_update"
+  repo_name=`basename "$temp_repo"`
 fi
 
-cw_FORGE_GRIDWARE_TEMP_REPO="$temp_repo" ${cw_ROOT}/bin/alces gridware install --binary --non-interactive #{package_path}
+cw_FORGE_GRIDWARE_TEMP_REPO="$temp_repo" ${cw_ROOT}/bin/alces gridware install --binary --non-interactive "$repo_name/#{package_path}"
 result=$?
 
 if [ ! -z "$temp_repo" ] ; then
