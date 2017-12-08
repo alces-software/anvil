@@ -46,6 +46,11 @@ module GridwareImport
           path = path.drop(1)
         end
 
+        if path[0] == 'ext'
+          puts "Skipping #{path[0..-2].join('/')}"
+          next
+        end
+
         pkg_name = path[1]
         pkg_version = metadata[:version] || path[-2]
 
