@@ -6,8 +6,10 @@ module V1
     attributes :name, :summary, :description,
                :changelog, :licence, :tag_names,
                :package_url, :website, :version
+    attributes :username
 
     attributes :updated_at, :created_at
+
 
     has_one :user
     has_one :category

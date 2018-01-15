@@ -28,4 +28,9 @@ class Package < ApplicationRecord
 
   validates :package_url,
             presence: true
+
+  def username
+    # Convenience method to embed username in package resource without including everything to do with user
+    user.name
+  end
 end
