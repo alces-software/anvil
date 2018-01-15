@@ -12,7 +12,7 @@ module V1
     has_one :user
     has_one :category
 
-    has_many :dependencies
+    has_many :dependencies, always_include_linkage_data: true
 
     filters :name, :version
     filter :username, apply: ->(records, value, _options) {
