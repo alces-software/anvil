@@ -12,6 +12,8 @@ module V1
     has_one :user
     has_one :category
 
+    has_many :dependencies
+
     filters :name, :version
     filter :username, apply: ->(records, value, _options) {
       records.joins(:user).where(users: { name: value[0] })
