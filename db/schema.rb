@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180115104219) do
+ActiveRecord::Schema.define(version: 20180118114008) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -45,13 +45,6 @@ ActiveRecord::Schema.define(version: 20180115104219) do
     t.datetime "updated_at", null: false
   end
 
-  create_table "package_dependencies", id: false, force: :cascade do |t|
-    t.uuid "parent_id"
-    t.uuid "dependent_id"
-    t.index ["dependent_id"], name: "index_package_dependencies_on_dependent_id"
-    t.index ["parent_id"], name: "index_package_dependencies_on_parent_id"
-  end
-
   create_table "packages", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.uuid "user_id"
     t.string "name", limit: 512, null: false
@@ -65,6 +58,7 @@ ActiveRecord::Schema.define(version: 20180115104219) do
     t.datetime "updated_at", null: false
     t.string "version"
     t.uuid "category_id", default: "6b0654b3-bae3-47c9-a2a8-6e75008f0dbc", null: false
+    t.string "dependencies", default: [], array: true
     t.index ["name", "version", "user_id"], name: "index_packages_on_name_and_version_and_user_id", unique: true
   end
 

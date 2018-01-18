@@ -4,7 +4,7 @@ module V1
     paginator :optional_limit
 
     attributes :name, :summary, :description,
-               :changelog, :licence, :tag_names,
+               :dependencies, :changelog, :licence, :tag_names,
                :package_url, :website, :version
     attributes :username
 
@@ -13,8 +13,6 @@ module V1
 
     has_one :user
     has_one :category
-
-    has_many :dependencies, always_include_linkage_data: true
 
     filters :name, :version
     filter :username, apply: ->(records, value, _options) {
