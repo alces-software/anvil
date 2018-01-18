@@ -21,5 +21,13 @@ module V1
       records.joins(:user).where(users: { name: value[0] })
     }
 
+    def self.updatable_fields(context)
+      super - [:username]
+    end
+
+    def self.creatable_fields(context)
+      super - [:username]
+    end
+
   end
 end
