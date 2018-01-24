@@ -11,5 +11,6 @@ Rails.application.routes.draw do
     jsonapi_resources :users
 
     get 'search', to: 'search#search'
+    post 'upload', to: 'upload#upload'
   end
 end
