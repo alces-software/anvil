@@ -31,7 +31,6 @@ class V1::UploadController < ApplicationController
       set_attributes(package, attrs)
 
       package.package_url = ::Alces::Anvil::S3Utils.url_for(package)
-      p package
       package.save!  # We need to save the package to let the PackageResource generate properly
 
       resource = V1::PackageResource.new(package, { current_user: current_user})
