@@ -28,7 +28,10 @@ class V1::UploadController < ApplicationController
 
       package = Package.where(user: current_user, name: attrs['name'], version: attrs['version']).first_or_create
 
+      set_attributes(package, attrs)
+
       package.package_url = ::Alces::Anvil::S3Utils.url_for(package)
+      p package
       package.save!  # We need to save the package to let the PackageResource generate properly
 
       resource = V1::PackageResource.new(package, { current_user: current_user})
@@ -74,6 +77,15 @@ class V1::UploadController < ApplicationController
   def validate_attributes(attrs)
     check(attrs.include?('name'), 'Package metadata must specify a name')
     check(attrs.include?('version'), 'Package metadata must specify a version')
+  end
+
+  def set_attributes(package, attrs)
+    attrs.each do |key, value|
+      setter = "#{key.underscore}=".to_sym
+      if package.respond_to?(setter)
+        package.send(setter, value)
+      end
+    end
   end
 
   def check(condition, message)
