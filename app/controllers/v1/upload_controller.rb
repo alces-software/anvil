@@ -6,7 +6,7 @@ class V1::UploadController < ApplicationController
 
   class InvalidUploadException < Exception; end
 
-  rescue_from InvalidUploadException do |exception|
+  rescue_from InvalidUploadException, JSON::ParserError do |exception|
     error_object = {
         title: 'Invalid upload',
         detail: exception.message,
