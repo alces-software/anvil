@@ -38,6 +38,8 @@ GEM
       i18n (~> 0.7)
       minitest (~> 5.1)
       tzinfo (~> 1.1)
+    addressable (2.5.2)
+      public_suffix (>= 2.0.2, < 4.0)
     arel (8.0.0)
     aws-partitions (1.35.0)
     aws-sdk-core (3.7.0)
@@ -57,12 +59,23 @@ GEM
     cancancan (2.0.0)
     coderay (1.1.2)
     concurrent-ruby (1.0.5)
+    domain_name (0.5.20180417)
+      unf (>= 0.0.5, < 1.0.0)
     erubi (1.6.1)
     ffi (1.9.18)
     foreman (0.84.0)
       thor (~> 0.19.1)
     globalid (0.4.0)
       activesupport (>= 4.2.0)
+    http (3.3.0)
+      addressable (~> 2.3)
+      http-cookie (~> 1.0)
+      http-form_data (~> 2.0)
+      http_parser.rb (~> 0.6.0)
+    http-cookie (1.0.3)
+      domain_name (~> 0.5)
+    http-form_data (2.1.1)
+    http_parser.rb (0.6.0)
     i18n (0.8.4)
     jmespath (1.3.1)
     jsonapi-resources (0.9.0)
@@ -87,6 +100,7 @@ GEM
     nio4r (2.1.0)
     nokogiri (1.8.0)
       mini_portile2 (~> 2.2.0)
+    parallel (1.12.1)
     pg (0.21.0)
     pry (0.11.0)
       coderay (~> 1.1.0)
@@ -94,6 +108,7 @@ GEM
     pry-byebug (3.6.0)
       byebug (~> 10.0)
       pry (~> 0.10)
+    public_suffix (3.0.2)
     puma (3.9.1)
     rack (2.0.3)
     rack-cors (0.4.1)
@@ -144,6 +159,9 @@ GEM
     thread_safe (0.3.6)
     tzinfo (1.2.3)
       thread_safe (~> 0.1)
+    unf (0.1.4)
+      unf_ext
+    unf_ext (0.0.7.5)
     websocket-driver (0.6.5)
       websocket-extensions (>= 0.1.0)
     websocket-extensions (0.1.2)
@@ -155,9 +173,11 @@ DEPENDENCIES
   aws-sdk-s3
   cancancan
   foreman
+  http
   jsonapi-resources
   jwt
   listen (>= 3.0.5, < 3.2)
+  parallel
   pg (~> 0.18)
   pry
   pry-byebug
