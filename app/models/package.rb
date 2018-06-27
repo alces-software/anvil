@@ -1,4 +1,25 @@
+
+require 'zip'
+
 class Package < ApplicationRecord
+  class << self
+    def build_from_zip(file:, **args)
+      a = extract_metadata(file).attributes
+      new(name: a.name, version: a.version, **args)
+    end
+
+    private
+
+    def extract_metadata(file)
+      zip = Zip::File.open(file)
+      JSON.parse(
+        zip.read(zip.get_entry('metadata.json')),
+        object_class: OpenStruct
+      )
+    end
+  end
+
+
   include Taggable
   belongs_to :user
   belongs_to :category
@@ -67,3 +88,4 @@ class Package < ApplicationRecord
     end
   end
 end
+
