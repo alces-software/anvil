@@ -1,3 +1,4 @@
+#!/bin/bash
 set -e
 
 # Installs the required packages
