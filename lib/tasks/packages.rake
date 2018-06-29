@@ -15,6 +15,7 @@ namespace :packages do
     )
     Parallel.map(packages.data, in_threads: 10) do |metadata|
       uri = URI.parse(metadata.attributes.packageUrl)
+      puts "Downloading: #{uri.to_s}"
       path = package_path(URI.unescape(uri.path))
       FileUtils.mkdir_p File.dirname(path)
       File.open(path, "wb") do |save_file|
