@@ -145,7 +145,7 @@ ANVIL_LOCAL_DIR: The base directory for the download. Typically this would
                  be hosted on the rails in built `public` directory or
                  hosted by apache/ enginx. Anvil will store the files in
                  a `packages` sub directory
-                 DEFAULT: anvil/public
+                 DEFAULT: /path/to/anvil/public
 
 ANVIL_UPSTREAM:  The upstream anvil database to take the snapshot on. It
                  defaults to the main production database.
