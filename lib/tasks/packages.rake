@@ -56,7 +56,7 @@ namespace :packages do
   end
 
   def package_path(relative_path)
-    File.join(ENV['ANVIL_LOCAL_DIR'], 'local-packages', relative_path)
+    File.join(ENV['ANVIL_LOCAL_DIR'], 'packages', relative_path)
   end
 
   def extract_package_url(absolute_path)
