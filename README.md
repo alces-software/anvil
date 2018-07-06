@@ -181,14 +181,15 @@ rake db:drop
 
 ## Running the Server
 
-You are now ready to start the `anvile` rails server with the command bellow.
+You are now ready to start the `anvil` rails server with the command bellow.
 This will likely launch in development mode if no further configurations are
 made. This means the `public` directory should be statically served without
 any futher configurations.
 
 However there is no reason why the packages need to be hosted on this 
-machine, the packages can be hosted anywhere as long as the `ANVIL_BASE_URL`
-is pointing to its location.
+machine, the packages can be hosted anywhere as long as the 
+`ANVIL_BASE_URL` was set correctly when the import occurred.
+NOTE: Changes to the base url after the fact will be ignored
 
 ```
 rails server -p 80
