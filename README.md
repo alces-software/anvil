@@ -46,3 +46,67 @@ URLs replaced with the new one. (We don't yet - 2017-10-23 - use that URL for an
 this isn't very important right now. In general we need to think about versioning - both of
 content items such as Gridware and customizers, and also in terms of Clusterware version
 compatibilities.)
+
+# ANVIL: Offline Install Guide
+
+Anvil is a `metadata` server that records the URL of a series of packages.
+It is possible to setup `anvil` to server forge packages over a local
+network. By doing so, `flight` can forge install without an external
+internet connection.
+
+## Getting Started
+### Cloning the git repo
+
+This is a private repo, so the initial install can not be bootstrapped at
+this point in time. Instead the repo must be manually clone with your
+credentials:
+```
+git clone https://github.com/alces-software/anvil.git
+Cloning into 'anvil'...
+Username for 'https://github.com':
+Password for 'https://sg@github.com':
+```
+
+### Installing ruby, postgres and rails
+
+On a clean centos7 install, RoR w/ Postgres can be installed easily by
+running the `scripts/install.sh` script. This will have to be done with
+root privileges as it needs to `yum install`.
+```
+./anvil/scripts/install.sh
+```
+
+#### Notes: Installing PostgreSQL
+
+Postgres is not installed using `yum`. The `yum` repo version is Postgres9.2
+which is not compatible with the `pg` gem used by rails. The `pg` gem 
+contains C native extensions that need to be compiled against the shared
+libraries. It is possible add the `postgres9.6` repo to yum, however it
+becomes a bit of a hack to get the shared libraries in the correct places.
+
+Instead postgres is installed from source. This way the header files are
+immediately ready for `rubygem` to come along latter. The postgres install
+can be ran independently with:
+```
+./anvil/scripts/setup-postgres.sh
+```
+
+#### Notes: Installing rvm and RoR
+
+The install script also installs `rvm` ruby, bundler and all the gems.
+Rails is automatically setup by this process. However the `rvm` profile
+will need to sourced into your environment. It can also be ran independently
+with:
+```
+./anvil/scripts/setup-rvm-rails.sh
+source /usr/local/rvm/scripts/rvm
+```
+
+If you prefer not install `rvm`, any recent issue version of ruby (2.4 ish)
+will do. However `bundler` and the gems will need to be installed with:
+```
+cd ./anvil
+gem install bundler
+bundle install
+```
+
