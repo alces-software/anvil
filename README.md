@@ -115,5 +115,67 @@ Sometimes the GPG key server hangs/ errors. If this happens, just rerun
 `setup-rvm-rails.sh` as PostgreSQL has already been installed. This just
 happens occasionally.
 
-##
+## Creating a Database Snapshot
+
+Once rails has been installed, a default snapshot can be created by 
+changing to the anvil directory and running the snapshot rake command.
+
+```
+# cd ./anvil
+# rake packages:snapshot
+Which IP/domain are the packages hosted on?
+> www.example.com
+```
+
+Running this command with no other system configurations sets up the
+default server, however it still needs to be told which ip/ domain the
+packages will be hosted on. See environment setup for more details
+
+NOTE: The answer should not include the protocol as it will default to 
+`http`. However the underlining `ANVIL_BASE_URL` needs to be fully
+qualified including the protocol.
+
+### Environment Setup
+
+Running the `snapshot` rake command does not alter your environment setup,
+it does however use the following environment variables internally
+
+```
+ANVIL_LOCAL_DIR: The base directory for the download. Typically this would
+                 be hosted on the rails in built `public` directory or
+                 hosted by apache/ enginx. Anvil will store the files in
+                 a `packages` sub directory
+                 DEFAULT: anvil/public
+
+ANVIL_UPSTREAM:  The upstream anvil database to take the snapshot on. It
+                 defaults to the main production database.
+                 DEFAULT: https://forge-api.alces-flight.com
+
+ANVIL_BASE_URL:  A fully qualified URL (inc. protocol) to where the
+                 packages will be hosted. This will be stored in the db
+                 with the package metadata. Thus it does not need to be
+                 permanetly set within the environment. There is no default
+```
+
+### Drop DB and Running the Snapshot Manually
+
+If the above environment variable are set, then `rake package:snapshot` 
+will automatically download and import the database in a single set.
+
+The automatic snapshot will not work if the database already exists as
+it can not recover from any errors. Instead the snapshot should be 
+preformed step by step using the commands bellow.
+
+It does require the above environment variables to be set manually as well,
+refer to `lib/rake/packages.rb` for further details.
+
+```
+rake snapshot:download
+rake snashot:import
+```
+
+Alternatively the database could be dropped with:
+```
+rake db:drop
+```
 
