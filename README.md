@@ -110,3 +110,10 @@ gem install bundler
 bundle install
 ```
 
+##### PS: GPG Key Error
+Sometimes the GPG key server hangs/ errors. If this happens, just rerun
+`setup-rvm-rails.sh` as PostgreSQL has already been installed. This just
+happens occasionally.
+
+##
+
