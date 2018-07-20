@@ -28,13 +28,11 @@ namespace :packages do
   task import: :environment do
     raise 'The ANVIL_LOCAL_DIR has not been set' unless ENV['ANVIL_LOCAL_DIR']
     raise 'The ANVIL_BASE_URL has not been set' unless ENV['ANVIL_BASE_URL']
-    user = User.where(name: 'alces').first_or_create
-    category = Category.where(name: 'uncategorised').first_or_create
-    Dir[package_path('**/*.zip')].each do |zip_path|
-      url = extract_package_url(zip_path)
-      Package.build_from_zip(
-        user: user, category: category, package_url: url, file: zip_path
-      ).save!
+    files = Dir[package_path('**/*.zip')]
+    files.each do |path|
+      valid = add_package_from_zip_path(path)
+      next if valid
+      files << path
     end
   end
 
@@ -75,5 +73,14 @@ namespace :packages do
   rescue ActiveRecord::NoDatabaseError
     # The database doesn't exist so do nothing
     return
+  end
+
+  def add_package_from_zip_path(zip_path)
+    user = User.where(name: 'alces').first_or_create
+    category = Category.where(name: 'uncategorised').first_or_create
+    url = extract_package_url(zip_path)
+    Package.build_from_zip(
+      user: user, category: category, package_url: url, file: zip_path
+    ).save
   end
 end

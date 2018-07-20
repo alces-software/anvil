@@ -31,6 +31,7 @@ group :development, :test do
   # Use the `pry-byebug` extension instead of vanilla byebug
   gem 'pry'
   gem 'pry-byebug'
+  gem 'pry-rails'
 end
 
 group :development do

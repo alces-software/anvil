@@ -102,6 +102,8 @@ GEM
     pry-byebug (3.6.0)
       byebug (~> 10.0)
       pry (~> 0.10)
+    pry-rails (0.3.6)
+      pry (>= 0.10.4)
     puma (3.9.1)
     rack (2.0.3)
     rack-cors (0.4.1)
@@ -189,6 +191,7 @@ DEPENDENCIES
   pg (~> 0.18)
   pry
   pry-byebug
+  pry-rails
   puma (~> 3.7)
   rack-cors
   rails (~> 5.1.2)
@@ -199,4 +202,4 @@ DEPENDENCIES
   tzinfo-data
 
 BUNDLED WITH
-   1.16.2
+   1.16.3

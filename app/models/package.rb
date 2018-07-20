@@ -5,7 +5,9 @@ class Package < ApplicationRecord
   class << self
     def build_from_zip(file:, **args)
       a = extract_metadata(file).attributes
-      new(name: a.name, version: a.version, **args)
+      new(name: a.name, version: a.version, **args).tap do |p|
+        set_attributes(p, a)
+      end
     end
 
     private
@@ -16,6 +18,15 @@ class Package < ApplicationRecord
         zip.read(zip.get_entry('metadata.json')),
         object_class: OpenStruct
       )
+    end
+
+    def set_attributes(package, attrs)
+      attrs.to_h.each do |key, value|
+        setter = "#{key.to_s.underscore}=".to_sym
+        if package.respond_to?(setter)
+          package.send(setter, value)
+        end
+      end
     end
   end
 
