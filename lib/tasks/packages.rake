@@ -29,11 +29,15 @@ namespace :packages do
     raise 'The ANVIL_LOCAL_DIR has not been set' unless ENV['ANVIL_LOCAL_DIR']
     raise 'The ANVIL_BASE_URL has not been set' unless ENV['ANVIL_BASE_URL']
     files = Dir[package_path('**/*.zip')]
-    files.each do |path|
-      valid = add_package_from_zip_path(path)
-      next if valid
-      files << path
+    files.define_singleton_method(:delete_if_saveable) do
+      self.delete_if { |f| add_package_from_zip_path(path) }
     end
+    count = files.length + 1 # Fudge the initial condition check
+    loop while count > (count = files.delete_if_saveable.length)
+    raise <<-ERROR.strip_heredoc if count > 0
+      Failed to import the following packages:
+      #{files.join("\n")}
+    ERROR
   end
 
   desc 'Download and import the packages'
