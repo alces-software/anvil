@@ -30,7 +30,7 @@ namespace :packages do
     raise 'The ANVIL_BASE_URL has not been set' unless ENV['ANVIL_BASE_URL']
     files = Dir[package_path('**/*.zip')]
     files.define_singleton_method(:delete_if_saveable) do
-      self.delete_if { |f| add_package_from_zip_path(path) }
+      self.delete_if { |f| add_package_from_zip_path(f) }
     end
     count = files.length + 1 # Fudge the initial condition check
     loop while count > (count = files.delete_if_saveable.length)
