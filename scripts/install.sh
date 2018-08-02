@@ -1,8 +1,38 @@
 #!/bin/bash
-set -e
 scripts_dir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
-# Calls the postgres and rails setup
-$scripts_dir/setup-postgres.sh
-$scripts_dir/setup-rvm-rails.sh
+# Installs postgres if it is missing
+if ! which postgres 2>&1 >/dev/null; then
+  $scripts_dir/setup-postgres.sh
+fi
+
+# Ensures the profile has been sourced
+source ~/.bashrc
+
+# Sets the rails environment to be snapshot
+if ! [[ -z "RAILS_ENV" ]]; then
+  echo "export RAILS_ENV=snapshot" >> ~/.bashrc
+  source ~/.bashrc
+fi
+
+# Installs the gems
+cd $scripts_dir/..
+bundle install --without development --with default snapshot
+
+# Prints the ip information to the screen, this is for the users benefit
+# as it displays the IP of the node. It's up to the user if they uses it
+# in the snapshot
+ip a
+
+# Preforms the snapshot
+# It will either prompt for the IP (OR use the env var if set)
+rake packages:snapshot
+
+# Notifies the install has completed
+cat << MSG
+
+Successfully installed 'Anvil' server, please source the profile before
+continuing
+
+MSG
 
