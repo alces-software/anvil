@@ -3,7 +3,7 @@
 For the first time:
 
  - Create a Dokku app and linked Postgres service
- - Override the autodetection of buildpacks, which gets confused by the presence of a 
+ - Override the autodetection of buildpacks, which gets confused by the presence of a
  `Dockerfile`:
  `dokku config:set <app> BUILDPACK_URL=https://github.com/heroku/heroku-buildpack-ruby.git`
  - Run `dokku run <app> rake db:setup` to initialise the database
@@ -26,7 +26,7 @@ For the first time:
    - `dokku run <app> rake customizer:update`
       - Don't be alarmed by the big red mentions of `ROLLBACK` in the output. That's
       Rails's way of telling you it's in the `create` part of `first_or_create` (AFAICT).
-      
+
 Subsequent times: TBC but something like push, migrate, ???, profit (is it clever enough
 to migrate automatically?)
 
@@ -39,7 +39,7 @@ e.g.
 
 ```bash
 CUSTOMIZER_SOURCE_BASE_URL=https://s3-eu-west-1.amazonaws.com/alces-flight-profiles-eu-west-1/develop/features bin/rake customizer update
-``` 
+```
 
 Note that matching is done on (user, name) so existing customizer items will have their S3
 URLs replaced with the new one. (We don't yet - 2017-10-23 - use that URL for anything, so
@@ -67,11 +67,13 @@ Username for 'https://github.com':
 Password for 'https://sg@github.com':
 ```
 
-### Installing ruby, postgres and rails
+### Running the Install and preforming the Snapshot
 
-On a clean centos7 install, RoR w/ Postgres can be installed easily by
-running the `scripts/install.sh` script. This will have to be done with
-root privileges as it needs to `yum install`.
+Anvil has been designed to run with a existing installation of ruby. This can either be RVM ruby OR Flight Direct ruby. If using Flight Direct, please remember to switch to the runtime environment with `flight bash`.
+
+Any recent version of ruby (2.4+) should work, however it has only been tested on ruby 2.5.1.
+
+Whilst running as root, the entire install and snapshot can be started with:
 ```
 ./anvil/scripts/install.sh
 ```
@@ -79,7 +81,7 @@ root privileges as it needs to `yum install`.
 #### Notes: Installing PostgreSQL
 
 Postgres is not installed using `yum`. The `yum` repo version is Postgres9.2
-which is not compatible with the `pg` gem used by rails. The `pg` gem 
+which is not compatible with the `pg` gem used by rails. The `pg` gem
 contains C native extensions that need to be compiled against the shared
 libraries. It is possible add the `postgres9.6` repo to yum, however it
 becomes a bit of a hack to get the shared libraries in the correct places.
@@ -91,35 +93,10 @@ can be ran independently with:
 ./anvil/scripts/setup-postgres.sh
 ```
 
-#### Notes: Installing rvm and RoR
-
-The install script also installs `rvm` ruby, bundler and all the gems.
-Rails is automatically setup by this process. However the `rvm` profile
-will need to sourced into your environment. It can also be ran independently
-with:
-```
-./anvil/scripts/setup-rvm-rails.sh
-source /usr/local/rvm/scripts/rvm
-```
-
-If you prefer not install `rvm`, any recent issue version of ruby (2.4 ish)
-will do. However `bundler` and the gems will need to be installed with:
-```
-cd ./anvil
-gem install bundler
-bundle install
-```
-
-##### PS: GPG Key Error
-Sometimes the GPG key server hangs/ errors. If this happens, just rerun
-`setup-rvm-rails.sh` as PostgreSQL has already been installed. This just
-happens occasionally.
-
 ## Creating a Database Snapshot
 
-Once rails has been installed, a default snapshot can be created by 
-changing to the anvil directory and running the snapshot rake command.
-
+The database snapshot will be automatically triggered by the install
+script. However it can also be triggered manually using:
 ```
 # cd ./anvil
 # rake packages:snapshot
@@ -131,7 +108,7 @@ Running this command with no other system configurations sets up the
 default server, however it still needs to be told which ip/ domain the
 packages will be hosted on. See environment setup for more details
 
-NOTE: The answer should not include the protocol as it will default to 
+NOTE: The answer should not include the protocol as it will default to
 `http`. However the underlining `ANVIL_BASE_URL` needs to be fully
 qualified including the protocol.
 
@@ -159,11 +136,11 @@ ANVIL_BASE_URL:  A fully qualified URL (inc. protocol) to where the
 
 ### Drop DB and Running the Snapshot Manually
 
-If the above environment variable are set, then `rake package:snapshot` 
+If the above environment variable are set, then `rake package:snapshot`
 will automatically download and import the database in a single set.
 
 The automatic snapshot will not work if the database already exists as
-it can not recover from any errors. Instead the snapshot should be 
+it can not recover from any errors. Instead the snapshot should be
 preformed step by step using the commands bellow.
 
 It does require the above environment variables to be set manually as well,
@@ -186,12 +163,12 @@ This will likely launch in development mode if no further configurations are
 made. This means the `public` directory should be statically served without
 any futher configurations.
 
-However there is no reason why the packages need to be hosted on this 
-machine, the packages can be hosted anywhere as long as the 
+However there is no reason why the packages need to be hosted on this
+machine, the packages can be hosted anywhere as long as the
 `ANVIL_BASE_URL` was set correctly when the import occurred.
 NOTE: Changes to the base url after the fact will be ignored
 
 ```
-rails server -p 80
+bin/rails server -p 80 -b 0.0.0.0
 ```
 
