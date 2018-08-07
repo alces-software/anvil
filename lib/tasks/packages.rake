@@ -49,6 +49,21 @@ namespace :packages do
     ENV['ANVIL_LOCAL_DIR'] ||= File.expand_path(File.join(
       File.dirname(__FILE__), '..', '..', 'public'
     ))
+
+    # Downloads the git packages
+    ['clusterware-handlers', 'clusterware-sessions',
+     'clusterware-services', 'clusterware-storage',
+     'gridware-packages-main', 'packager-base', 'gridware-depots'
+    ].each do |repo|
+      url = "https://github.com/alces-software/#{repo}.git"
+      source = "/tmp/repos/#{repo}"
+      target = File.join(ENV['ANVIL_LOCAL_DIR'], 'git', "#{repo}.tar.gz")
+      print `rm -rf #{source} #{target}`
+      print `mkdir -p #{File.dirname(target)}`
+      puts `git clone #{url} #{source}`
+      puts `tar --warning=no-file-changed -C #{source} -czf #{target} .`
+    end
+
     Rake::Task['db:setup'].invoke
     puts 'Downloading packages...'
     Rake::Task['packages:download'].invoke
