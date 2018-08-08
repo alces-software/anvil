@@ -29,12 +29,12 @@ Requires=postgresql.service
 
 [Service]
 Type=simple
-User=root
-Group=root
 ExecStart=/bin/bash $scripts_dir/start-anvil.sh
+
 TimeoutSec=30
-RestartSec=15s
-Restart=always
+
+[Install]
+WantedBy=multi-user.target
 SYSTEMD
 systemctl daemon-reload
 
@@ -47,14 +47,12 @@ ip a
 # It will either prompt for the IP (OR use the env var if set)
 rake packages:snapshot
 
-# Notifies the install has completed
-cat << MSG
-
-Successfully installed 'Anvil' server
-The server can be started using systemd:
-
+# Starts the server
 systemctl enable anvil
 systemctl start anvil
 
+# Notifies the install has completed
+cat << MSG
+Successfully installed 'Anvil' server
 MSG
 
