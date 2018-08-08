@@ -53,7 +53,8 @@ namespace :packages do
     # Downloads the git packages
     ['clusterware-handlers', 'clusterware-sessions',
      'clusterware-services', 'clusterware-storage',
-     'gridware-packages-main', 'packager-base', 'gridware-depots'
+     'gridware-packages-main', 'packager-base', 'gridware-depots',
+     'packager-base'
     ].each do |repo|
       url = "https://github.com/alces-software/#{repo}.git"
       source = "/tmp/repos/#{repo}"
@@ -63,6 +64,9 @@ namespace :packages do
       puts `git clone #{url} #{source}`
       puts `tar --warning=no-file-changed -C #{source} -czf #{target} .`
     end
+    # Renames packager-base to be the volatile repo
+    FileUtils.mv File.join(ENV['ANVIL_LOCAL_DIR'], 'git', 'packager-base.tar.gz'),
+      File.join(ENV['ANVIL_LOCAL_DIR'], 'git', 'gridware-packages-volatile.tar.gz')
 
     Rake::Task['db:setup'].invoke
     puts 'Downloading packages...'
