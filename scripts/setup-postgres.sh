@@ -78,7 +78,6 @@ TimeoutSec=300
 [Install]
 WantedBy=multi-user.target
 SYSTEMD
-chmod +x $systemd
 
 # Reloads the systemd daemon and starts postgres
 systemctl daemon-reload
