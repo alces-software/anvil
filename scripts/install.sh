@@ -19,7 +19,7 @@ fi
 systemd=/usr/lib/systemd/system/anvil.service
 cat << SYSTEMD > $systemd
 [Unit]
-Description=MyApp
+Description=Runs the anvil cache server
 Requires=network.target
 Requires=postgresql.service
 
