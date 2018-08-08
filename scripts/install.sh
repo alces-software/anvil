@@ -15,6 +15,10 @@ if ! [[ -z "RAILS_ENV" ]]; then
   source ~/.bashrc
 fi
 
+# Installs the gems
+cd $scripts_dir/..
+bundle install --without development --with default snapshot
+
 # Sets up systemd integration for anvil
 systemd=/usr/lib/systemd/system/anvil.service
 cat << SYSTEMD > $systemd
@@ -32,10 +36,7 @@ TimeoutSec=30
 RestartSec=15s
 Restart=always
 SYSTEMD
-
-# Installs the gems
-cd $scripts_dir/..
-bundle install --without development --with default snapshot
+systemctl daemon-reload
 
 # Prints the ip information to the screen, this is for the users benefit
 # as it displays the IP of the node. It's up to the user if they uses it
@@ -49,8 +50,11 @@ rake packages:snapshot
 # Notifies the install has completed
 cat << MSG
 
-Successfully installed 'Anvil' server, please source the profile before
-continuing
+Successfully installed 'Anvil' server
+The server can be started using systemd:
+
+systemctl enable anvil
+systemctl start anvil
 
 MSG
 
