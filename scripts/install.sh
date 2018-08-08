@@ -15,6 +15,24 @@ if ! [[ -z "RAILS_ENV" ]]; then
   source ~/.bashrc
 fi
 
+# Sets up systemd integration for anvil
+systemd=/usr/lib/systemd/system/anvil.service
+cat << SYSTEMD > $systemd
+[Unit]
+Description=MyApp
+Requires=network.target
+Requires=postgresql.service
+
+[Service]
+Type=simple
+User=root
+Group=root
+ExecStart=/bin/bash $scripts_dir/start-anvil.sh
+TimeoutSec=30
+RestartSec=15s
+Restart=always
+SYSTEMD
+
 # Installs the gems
 cd $scripts_dir/..
 bundle install --without development --with default snapshot
