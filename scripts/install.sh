@@ -2,7 +2,7 @@
 scripts_dir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
 # Installs the required packages
-yum -y -e0 gcc
+yum -y -e0 install gcc
 
 # Installs postgres if it is missing
 if ! which postgres 2>&1 >/dev/null; then
