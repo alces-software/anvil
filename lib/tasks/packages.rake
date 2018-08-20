@@ -60,6 +60,14 @@ namespace :packages do
                                'bootstrap.sh')
     download(bootstrap_url, bootstrap_path)
 
+    # Sets the anvil_url in the bootstrap script
+    bootstrap_content = File.read(bootstrap_path)
+    new_bootstrap_content = bootstrap_content.gsub(
+      /# anvil_url=/, "anvil_url=#{ENV['ANVIL_BASE_URL']}"
+    )
+    FileUtils.rm(bootstrap_path)
+    File.write(bootstrap_path, new_bootstrap_content)
+
     # Downloads the installed version of Flight Direct from S3
     puts 'Downloading FlightDirect tarball'
     fd_url = "https://s3-eu-west-1.amazonaws.com/flight-direct/releases/el7/flight-direct-#{FlightDirect::VERSION}.tar.gz"
