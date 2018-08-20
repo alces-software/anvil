@@ -1,6 +1,9 @@
 #!/bin/bash
 scripts_dir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
+# Installs the required packages
+yum -y -e0 gcc
+
 # Installs postgres if it is missing
 if ! which postgres 2>&1 >/dev/null; then
   $scripts_dir/setup-postgres.sh
