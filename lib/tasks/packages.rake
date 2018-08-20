@@ -53,8 +53,7 @@ namespace :packages do
     # Downloads the git packages
     ['clusterware-handlers', 'clusterware-sessions',
      'clusterware-services', 'clusterware-storage',
-     'gridware-packages-main', 'packager-base', 'gridware-depots',
-     'packager-base'
+     'gridware-packages-main', 'packager-base', 'gridware-depots'
     ].each do |repo|
       url = "https://github.com/alces-software/#{repo}.git"
       source = "/tmp/repos/#{repo}"
