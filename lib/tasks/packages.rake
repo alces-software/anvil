@@ -4,6 +4,8 @@ require 'parallel'
 require 'open-uri'
 require 'highline/import'
 
+require_relative File.join(ENV['FL_ROOT'], 'lib/flight_direct/version.rb')
+
 namespace :packages do
   desc 'Downloads all the rake packages'
   task download: :environment do
@@ -51,11 +53,19 @@ namespace :packages do
     ))
 
     # Downloads the flight direct bootstrap script
+    puts 'Downloading FlightDirect bootstrap'
     bootstrap_url = 'https://raw.githubusercontent.com/alces-software/flight-direct/master/scripts/bootstrap.sh'
     bootstrap_path = File.join(ENV['ANVIL_LOCAL_DIR'],
                                'flight-direct',
                                'bootstrap.sh')
     download(bootstrap_url, bootstrap_path)
+
+    # Downloads the installed version of Flight Direct from S3
+    puts 'Downloading FlightDirect tarball'
+    fd_url = "https://s3-eu-west-1.amazonaws.com/flight-direct/releases/el7/flight-direct-#{FlightDirect::VERSION}.tar.gz"
+    fd_path = File.join(ENV['ANVIL_LOCAL_DIR'],
+                        'flight-direct/cache.tar.gz')
+    download(fd_url, fd_path)
 
     # Downloads the git packages
     ['clusterware-handlers', 'clusterware-sessions',
