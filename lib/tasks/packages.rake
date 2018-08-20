@@ -64,7 +64,7 @@ namespace :packages do
     puts 'Downloading FlightDirect tarball'
     fd_url = "https://s3-eu-west-1.amazonaws.com/flight-direct/releases/el7/flight-direct-#{FlightDirect::VERSION}.tar.gz"
     fd_path = File.join(ENV['ANVIL_LOCAL_DIR'],
-                        'flight-direct/cache.tar.gz')
+                        'flight-direct/flight-direct.tar.gz')
     download(fd_url, fd_path)
 
     # Downloads the git packages
