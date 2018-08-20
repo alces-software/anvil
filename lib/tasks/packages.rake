@@ -50,6 +50,13 @@ namespace :packages do
       File.dirname(__FILE__), '..', '..', 'public'
     ))
 
+    # Downloads the flight direct bootstrap script
+    bootstrap_url = 'https://raw.githubusercontent.com/alces-software/flight-direct/master/scripts/bootstrap.sh'
+    bootstrap_path = File.join(ENV['ANVIL_LOCAL_DIR'],
+                               'flight-direct',
+                               'bootstrap.sh')
+    download(bootstrap_url, bootstrap_path)
+
     # Downloads the git packages
     ['clusterware-handlers', 'clusterware-sessions',
      'clusterware-services', 'clusterware-storage',
@@ -104,5 +111,13 @@ namespace :packages do
     Package.build_from_zip(
       user: user, category: category, package_url: url, file: zip_path
     ).save
+  end
+
+  def download(url, path)
+    FileUtils.mkdir_p File.dirname(path)
+    case io = open(url)
+    when StringIO then File.open(path, 'w') { |f| f.write(io.read) }
+    when Tempfile then FileUtils.mv(io.path, path)
+    end
   end
 end
