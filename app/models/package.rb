@@ -3,10 +3,11 @@ require 'zip'
 
 class Package < ApplicationRecord
   class << self
-    def build_from_zip(file:, **args)
-      a = extract_metadata(file).attributes
-      new(name: a.name, version: a.version, **args).tap do |p|
-        set_attributes(p, a)
+    def build_from_zip(file:, **input_args)
+      default_args = extract_metadata(file).attributes.to_h.symbolize_keys
+      args = OpenStruct.new(default_args.merge(input_args))
+      new(name: args.name, version: args.version).tap do |p|
+        set_attributes(p, args)
       end
     end
 
