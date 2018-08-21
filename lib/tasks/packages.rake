@@ -76,8 +76,7 @@ namespace :packages do
     download(fd_url, fd_path)
 
     # Downloads the git packages
-    ['clusterware-handlers', 'clusterware-sessions',
-     'clusterware-services', 'clusterware-storage',
+    ['clusterware-sessions', 'clusterware-storage',
      'gridware-packages-main', 'packager-base', 'gridware-depots'
     ].each do |repo|
       url = "https://github.com/alces-software/#{repo}.git"
