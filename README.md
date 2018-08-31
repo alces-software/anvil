@@ -73,12 +73,15 @@ Anvil has been designed to run with a existing installation of ruby. This can ei
 
 Any recent version of ruby (2.4+) should work, however it has only been tested on ruby 2.5.1.
 
-Whilst running as root, the entire install and snapshot can be started with:
+Whilst running as root, the install and snapshot can be started with:
 ```
+# NOTE: This script might stop and wait for a IP to build on
+# SEE: Database Snapshot section for more details
 ./anvil/scripts/install.sh
+
 ```
 
-#### Notes: Installing PostgreSQL
+#### Note: Installing PostgreSQL
 
 Postgres is not installed using `yum`. The `yum` repo version is Postgres9.2
 which is not compatible with the `pg` gem used by rails. The `pg` gem
