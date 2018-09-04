@@ -11,7 +11,27 @@ class Package < ApplicationRecord
       end
     end
 
+    def from_package_path(path)
+      package_props = split_package_path(path)
+      user = User.find_by_name(package_props[:user])
+      candidates = Package.where(user: user, name: package_props[:package])
+
+      if package_props[:version]
+        candidates.find_by_version(package_props[:version])
+      else
+        candidates.order(version: :desc).first
+      end
+    end
+
     private
+
+    def split_package_path(path)
+      match = /(?<user>[^\/]+)\/(?<package>[^\/]+)(\/(?<version>[^\/]+))?/.match(path)
+
+      raise 'Unrecognised package format. Please specify as username/packagename[/version]' unless match
+
+      match
+    end
 
     def extract_metadata(file)
       zip = Zip::File.open(file)
@@ -62,27 +82,7 @@ class Package < ApplicationRecord
     user.name
   end
 
-  def self.from_package_path(path)
-    package_props = split_package_path(path)
-    user = User.find_by_name(package_props[:user])
-    candidates = Package.where(user: user, name: package_props[:package])
-
-    if package_props[:version]
-      candidates.find_by_version(package_props[:version])
-    else
-      candidates.order(version: :desc).first
-    end
-  end
-
   private
-
-  def self.split_package_path(path)
-    match = /(?<user>[^\/]+)\/(?<package>[^\/]+)(\/(?<version>[^\/]+))?/.match(path)
-
-    raise 'Unrecognised package format. Please specify as username/packagename[/version]' unless match
-
-    match
-  end
 
   def validate_dependencies
     # Check that each listed dependency is a valid package path and points to an actual package.
