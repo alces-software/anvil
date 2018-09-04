@@ -6,6 +6,7 @@ class Package < ApplicationRecord
     def build_from_zip(file:, **input_args)
       default_args = extract_metadata(file).attributes.to_h.symbolize_keys
       args = OpenStruct.new(default_args.merge(input_args))
+      args.zip_file_path = file
       new(name: args.name, version: args.version).tap do |p|
         set_attributes(p, args)
       end
@@ -51,6 +52,9 @@ class Package < ApplicationRecord
     end
   end
 
+  # This path is only used on the upload to validate the zip file is valid
+  # As it is not the permanent path, it is not stored in the database
+  attr_accessor :zip_file_path
 
   include Taggable
   belongs_to :user
