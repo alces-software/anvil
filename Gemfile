@@ -27,6 +27,7 @@ gem 'aws-sdk-s3'
 # Use Rack CORS for handling Cross-Origin Resource Sharing (CORS), making cross-origin AJAX possible
 # gem 'rack-cors'
 
+# Do not include `pry` in the snapshot environment as it requires readline
 group :development, :test do
   # Use the `pry-byebug` extension instead of vanilla byebug
   gem 'pry'
@@ -34,7 +35,7 @@ group :development, :test do
   gem 'pry-rails'
 end
 
-group :development, :snapshot do
+group :development, :snapshot, :test do
   gem 'listen', '>= 3.0.5', '< 3.2'
   # Spring speeds up development by keeping your application running in the background. Read more: https://github.com/rails/spring
   gem 'spring'
