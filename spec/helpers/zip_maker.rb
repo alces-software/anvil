@@ -15,6 +15,12 @@ module Helpers
         end
       end
 
+      def with_installer(path)
+        zip_open(path) do |zip_file|
+          zip_file.get_output_stream('install.sh') { |f| f.write('') }
+        end
+      end
+
       private
 
       def zip_open(path)

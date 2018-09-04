@@ -72,6 +72,7 @@ class Package < ApplicationRecord
   # to be validated
   with_options on: :create do |create|
     validates :zip_file_path, presence: true
+    validate :validate_zip_contains_installer
   end
 
   def username
@@ -119,6 +120,13 @@ class Package < ApplicationRecord
       rescue
           errors.add(:dependencies, "Dependency '#{dep}' could not be parsed")
       end
+    end
+  end
+
+  def validate_zip_contains_installer
+    Zip::File.open(zip_file_path) do |zip|
+      return if zip.find_entry('install.sh')
+      errors.add(:zip, 'The zip files is missing the "install.sh" script')
     end
   end
 end

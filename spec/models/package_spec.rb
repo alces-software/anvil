@@ -4,7 +4,7 @@ require 'helpers/zip_maker'
 require 'tempfile'
 
 RSpec.describe Package, type: :model do
-  it 'is valid' do
+  xit 'is valid' do
     expect(create(:package)).to be_valid
   end
 
@@ -37,21 +37,25 @@ RSpec.describe Package, type: :model do
       ).tap(&:save)
     end
 
-    it { is_expected.to be_valid }
+    context 'with standard zip files' do
+      before { Helpers::ZipMaker.with_installer(zip_path) }
 
-    context 'when the package_url has not been set' do
-      let(:package_url) { nil }
-      it { is_expected.not_to be_valid }
-    end
+      it { is_expected.to be_valid }
 
-    context 'when the package attributes have not been set' do
-      let(:package_attributes) { nil }
-      it { is_expected.not_to be_valid }
-    end
+      context 'when the package_url has not been set' do
+        let(:package_url) { nil }
+        it { is_expected.not_to be_valid }
+      end
 
-    context 'when the package name have not been set' do
-      let(:package_attributes) { { name: '' } }
-      it { is_expected.not_to be_valid }
+      context 'when the package attributes have not been set' do
+        let(:package_attributes) { nil }
+        it { is_expected.not_to be_valid }
+      end
+
+      context 'when the package name have not been set' do
+        let(:package_attributes) { { name: '' } }
+        it { is_expected.not_to be_valid }
+      end
     end
   end
 end
