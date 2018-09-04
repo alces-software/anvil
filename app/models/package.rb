@@ -74,9 +74,7 @@ class Package < ApplicationRecord
   end
 
   def set_missing_attributes_from_zip
-    JSON.parse(zip.read(zip.get_entry('metadata.json')))
-        .[]('attributes')
-        &.each do |key, value|
+    zip_metadata['attributes']&.each do |key, value|
       setter = :"#{key}="
       next unless respond_to?(setter)
       next if public_send(key)
@@ -116,6 +114,10 @@ class Package < ApplicationRecord
       return if zip.find_entry('install.sh')
       errors.add(:zip, 'The zip files is missing the "install.sh" script')
     end
+  end
+
+  def zip_metadata
+    JSON.parse(zip.read(zip.get_entry('metadata.json')))
   end
 end
 
