@@ -17,7 +17,8 @@ RSpec.describe Package, type: :model do
     } end
     let(:zip_type) { 'package' }
     let(:package_attributes) do {
-      name: 'test-package'
+      name: 'test-package',
+      version: '0.0.1'
     } end
     let(:package_url) { 'http://www.example.com/some-package' }
 
@@ -57,8 +58,17 @@ RSpec.describe Package, type: :model do
         it { is_expected.not_to be_valid }
       end
 
-      context 'when the package name have not been set' do
-        let(:package_attributes) { { name: '' } }
+      context 'when the package version has not been set' do
+        let(:package_attributes) { {
+          name: 'random', version: ''
+        } }
+        it { is_expected.not_to be_valid }
+      end
+
+      context 'when the package name has not been set' do
+        let(:package_attributes) { {
+          name: '', version: '0.0.1'
+        } }
         it { is_expected.not_to be_valid }
       end
 

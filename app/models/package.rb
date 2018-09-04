@@ -47,6 +47,7 @@ class Package < ApplicationRecord
             }
 
   validates :version,
+            presence: true,
             uniqueness: {
                 scope: [:user, :name]
             }
