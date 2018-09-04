@@ -38,6 +38,11 @@ RSpec.describe Package, type: :model do
     end
 
     it { is_expected.to be_valid }
+
+    context 'when the package_url has not been set' do
+      let(:package_url) { nil }
+      it { is_expected.not_to be_valid }
+    end
   end
 end
 
