@@ -4,7 +4,7 @@ require 'helpers/zip_maker'
 require 'tempfile'
 
 RSpec.describe Package, type: :model do
-  xit 'is valid' do
+  it 'is valid' do
     expect(create(:package)).to be_valid
   end
 
