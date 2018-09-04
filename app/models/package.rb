@@ -110,10 +110,8 @@ class Package < ApplicationRecord
   end
 
   def validate_zip_contains_installer
-    Zip::File.open(zip_file_path) do |zip|
-      return if zip.find_entry('install.sh')
-      errors.add(:zip, 'The zip files is missing the "install.sh" script')
-    end
+    return if zip.find_entry('install.sh')
+    errors.add(:zip, 'The zip files is missing the "install.sh" script')
   end
 
   def zip_metadata
