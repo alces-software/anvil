@@ -48,6 +48,11 @@ RSpec.describe Package, type: :model do
       let(:package_attributes) { nil }
       it { is_expected.not_to be_valid }
     end
+
+    context 'when the package name have not been set' do
+      let(:package_attributes) { { name: '' } }
+      it { is_expected.not_to be_valid }
+    end
   end
 end
 
