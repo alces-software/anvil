@@ -8,11 +8,18 @@ module Helpers
     class << self
       def with_metadata(path, **content)
         content = JSON.dump(content)
-        Zip::File.open(path, Zip::File::CREATE) do |zip_file|
+        zip_open(path) do |zip_file|
           zip_file.get_output_stream('metadata.json') do |f|
             f.write(content)
           end
         end
+      end
+
+      private
+
+      def zip_open(path)
+        flag = (File.size?(path) ? nil : Zip::File::CREATE)
+        Zip::File.open(path, flag) { |f| yield f }
       end
     end
   end
