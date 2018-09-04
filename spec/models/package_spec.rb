@@ -57,6 +57,10 @@ RSpec.describe Package, type: :model do
         it { is_expected.not_to be_valid }
       end
     end
+
+    it 'is invalid without the installer script' do
+      expect(subject).not_to be_valid
+    end
   end
 end
 
