@@ -18,6 +18,7 @@ RSpec.describe Package, type: :model do
     let(:package_attributes) do {
       name: 'test-package'
     } end
+    let(:package_url) { 'http://www.example.com/some-package' }
 
     before do
       Helpers::ZipMaker.with_metadata(zip_path, **metadata_content)
@@ -31,7 +32,7 @@ RSpec.describe Package, type: :model do
       described_class.build_from_zip(
         user: build(:user),
         category: build(:category),
-        package_url: 'www.example.com/random-url',
+        package_url: package_url,
         file: zip_path
       )
     end
