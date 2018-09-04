@@ -66,6 +66,7 @@ class Package < ApplicationRecord
   with_options on: :create do |create|
     validates :zip_file_path, presence: true
     validate :validate_zip_contains_installer
+    validate :validate_zip_type_is_package
   end
 
   def username
@@ -112,6 +113,11 @@ class Package < ApplicationRecord
   def validate_zip_contains_installer
     return if zip.find_entry('install.sh')
     errors.add(:zip, 'The zip files is missing the "install.sh" script')
+  end
+
+  def validate_zip_type_is_package
+    return if zip_metadata['type'] == 'package'
+    errors.add(:zip, 'The zip files is not of type "package"')
   end
 
   def zip_metadata

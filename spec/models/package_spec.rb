@@ -12,9 +12,10 @@ RSpec.describe Package, type: :model do
     let(:zip_temp_file) { Tempfile.new(['anvil-test-package', '.zip']) }
     let(:zip_path) { zip_temp_file.path }
     let(:metadata_content) do {
-      type: 'package',
+      type: zip_type,
       attributes: package_attributes
     } end
+    let(:zip_type) { 'package' }
     let(:package_attributes) do {
       name: 'test-package'
     } end
@@ -37,7 +38,11 @@ RSpec.describe Package, type: :model do
       ).tap(&:save)
     end
 
-    context 'with standard zip files' do
+    it 'is invalid without the installer script' do
+      expect(subject).not_to be_valid
+    end
+
+    context 'with the installer' do
       before { Helpers::ZipMaker.with_installer(zip_path) }
 
       it { is_expected.to be_valid }
@@ -56,10 +61,11 @@ RSpec.describe Package, type: :model do
         let(:package_attributes) { { name: '' } }
         it { is_expected.not_to be_valid }
       end
-    end
 
-    it 'is invalid without the installer script' do
-      expect(subject).not_to be_valid
+      context 'when the zip file is not of type package' do
+        let(:zip_type) { 'something-random' }
+        it { is_expected.not_to be_valid }
+      end
     end
   end
 end
