@@ -68,13 +68,19 @@ class Package < ApplicationRecord
 
   validate :validate_dependencies
 
+  # The following validators only apply on create when the zip file needs
+  # to be validated
+  with_options on: :create do |create|
+    validates :zip_file_path, presence: true
+  end
+
   def username
     # Convenience method to embed username in package resource without including everything to do with user
     user.name
   end
 
   # The following methods will attempt to read their values from the zip
-  # if they have not been otherwise set by the db
+  # if they have not been otherwise been set by the db
   [:name, :version, :licence, :summary, :dependencies].each do |method|
     define_method(method) do
       db_value = super()

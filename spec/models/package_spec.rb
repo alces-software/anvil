@@ -5,7 +5,7 @@ require 'tempfile'
 
 RSpec.describe Package, type: :model do
   it 'is valid' do
-    expect(build(:package)).to be_valid
+    expect(create(:package)).to be_valid
   end
 
   describe '::build_from_zip' do
