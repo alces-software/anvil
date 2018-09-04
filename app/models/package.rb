@@ -4,7 +4,9 @@ require 'zip'
 class Package < ApplicationRecord
   class << self
     def build_from_zip(file:, **input_args)
-      new(zip_file_path: file, **input_args)
+      new(zip_file_path: file, **input_args).tap do |p|
+        p.set_missing_attributes_from_zip
+      end
     end
 
     def from_package_path(path)
@@ -27,15 +29,6 @@ class Package < ApplicationRecord
       raise 'Unrecognised package format. Please specify as username/packagename[/version]' unless match
 
       match
-    end
-
-    def set_attributes(package, attrs)
-      attrs.to_h.each do |key, value|
-        setter = "#{key.to_s.underscore}=".to_sym
-        if package.respond_to?(setter)
-          package.send(setter, value)
-        end
-      end
     end
   end
 
@@ -80,30 +73,25 @@ class Package < ApplicationRecord
     user.name
   end
 
-  # The following methods will attempt to read their values from the zip
-  # if they have not been otherwise been set by the db
-  [:name, :version, :licence, :summary, :dependencies].each do |method|
-    define_method(method) do
-      db_value = super()
-      return db_value unless db_value.nil?
-      (zip_file_metadata.attributes || OpenStruct.new)[method].tap do |v|
-        public_send(:"#{method}=", v)
-      end
+  def set_missing_attributes_from_zip
+    JSON.parse(zip.read(zip.get_entry('metadata.json')))
+        .[]('attributes')
+        &.each do |key, value|
+      setter = :"#{key}="
+      next unless respond_to?(setter)
+      next if public_send(key)
+      public_send(setter, value)
     end
   end
 
   private
 
-  # This method returns the metadata contained within the zip file
+  # This method returns the zip object for the file
   # It only works if the zip_file_path has been set
-  def zip_file_metadata
+  def zip
     return nil unless zip_file_path
-    @zip_file_metadata ||= begin
-      zip = Zip::File.open(zip_file_path)
-      JSON.parse(
-        zip.read(zip.get_entry('metadata.json')),
-        object_class: OpenStruct
-      )
+    @zip ||= begin
+      Zip::File.open(zip_file_path)
     end
   end
 
