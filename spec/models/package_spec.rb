@@ -34,7 +34,7 @@ RSpec.describe Package, type: :model do
         category: build(:category),
         package_url: package_url,
         file: zip_path
-      )
+      ).tap(&:save)
     end
 
     it { is_expected.to be_valid }

@@ -85,7 +85,9 @@ class Package < ApplicationRecord
     define_method(method) do
       db_value = super()
       return db_value unless db_value.nil?
-      (zip_file_metadata.attributes || OpenStruct.new).send(method)
+      (zip_file_metadata.attributes || OpenStruct.new)[method].tap do |v|
+        public_send(:"#{method}=", v)
+      end
     end
   end
 
