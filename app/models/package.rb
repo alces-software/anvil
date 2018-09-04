@@ -4,12 +4,7 @@ require 'zip'
 class Package < ApplicationRecord
   class << self
     def build_from_zip(file:, **input_args)
-      default_args = extract_metadata(file).attributes.to_h.symbolize_keys
-      args = OpenStruct.new(default_args.merge(input_args))
-      args.zip_file_path = file
-      new(name: args.name, version: args.version).tap do |p|
-        set_attributes(p, args)
-      end
+      new(zip_file_path: file, **input_args)
     end
 
     def from_package_path(path)
@@ -32,14 +27,6 @@ class Package < ApplicationRecord
       raise 'Unrecognised package format. Please specify as username/packagename[/version]' unless match
 
       match
-    end
-
-    def extract_metadata(file)
-      zip = Zip::File.open(file)
-      JSON.parse(
-        zip.read(zip.get_entry('metadata.json')),
-        object_class: OpenStruct
-      )
     end
 
     def set_attributes(package, attrs)
@@ -86,7 +73,30 @@ class Package < ApplicationRecord
     user.name
   end
 
+  # The following methods will attempt to read their values from the zip
+  # if they have not been otherwise set by the db
+  [:name, :version, :licence, :summary, :dependencies].each do |method|
+    define_method(method) do
+      db_value = super()
+      return db_value unless db_value.nil?
+      (zip_file_metadata.attributes || OpenStruct.new).send(method)
+    end
+  end
+
   private
+
+  # This method returns the metadata contained within the zip file
+  # It only works if the zip_file_path has been set
+  def zip_file_metadata
+    return nil unless zip_file_path
+    @zip_file_metadata ||= begin
+      zip = Zip::File.open(zip_file_path)
+      JSON.parse(
+        zip.read(zip.get_entry('metadata.json')),
+        object_class: OpenStruct
+      )
+    end
+  end
 
   def validate_dependencies
     # Check that each listed dependency is a valid package path and points to an actual package.
