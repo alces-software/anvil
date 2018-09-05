@@ -1,5 +1,6 @@
 
-require 'helpers/zip_maker'
+
+require_relative File.join(File.dirname(__FILE__), 'helpers/zip_maker')
 
 FactoryBot.define do
   factory :package do
