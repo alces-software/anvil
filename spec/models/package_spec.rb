@@ -142,5 +142,27 @@ RSpec.describe Package, type: :model do
       end
     end
   end
+
+  describe '::where_from_file' do
+    include_context 'package:zip-file-subject'
+    before { Helpers::ZipMaker.with_installer(zip_path) }
+
+    context 'when the record exists' do
+      let(:query) do
+        described_class.where_from_zip(file: zip_path)
+      end
+
+      before { subject.save!.freeze }
+
+      it 'returns a realtion' do
+        expect(query).to be_a(ActiveRecord::Relation)
+      end
+
+      it 'is the only relation' do
+        expect(query.length).to be 1
+        expect(query.first).to eq(subject)
+      end
+    end
+  end
 end
 

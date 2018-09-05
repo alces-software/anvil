@@ -3,6 +3,11 @@ require 'zip'
 
 class Package < ApplicationRecord
   class << self
+    def where_from_zip(file:)
+      package = build_from_zip(file: file)
+      where(name: package.name, version: package.version)
+    end
+
     def build_from_zip(file:, **input_args)
       new(zip_file_path: file, **input_args).tap do |p|
         p.set_missing_attributes_from_zip
