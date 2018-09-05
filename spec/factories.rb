@@ -18,7 +18,8 @@ FactoryBot.define do
         package.zip_file_path,
         type: 'package',
         attributes: {
-          name: package.name
+          name: package.name,
+          version: package.version
         }
       )
       Helpers::ZipMaker.with_installer(package.zip_file_path)

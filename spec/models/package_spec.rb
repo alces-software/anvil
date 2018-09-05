@@ -36,7 +36,7 @@ RSpec.describe Package, type: :model do
         category: build(:category),
         package_url: package_url,
         file: zip_path
-      ).tap(&:save)
+      )
     end
 
     it 'is invalid without the installer script' do
@@ -70,6 +70,15 @@ RSpec.describe Package, type: :model do
           name: '', version: '0.0.1'
         } }
         it { is_expected.not_to be_valid }
+      end
+
+      ['name', 'version'].each do |method|
+        context "when the record '#{method}' does not match the zip" do
+          it 'is invalid' do
+            subject.public_send("#{method}=", 'some-random-value')
+            expect(subject).not_to be_valid
+          end
+        end
       end
 
       context 'when the zip file is not of type package' do

@@ -68,6 +68,7 @@ class Package < ApplicationRecord
     validates :zip_file_path, presence: true
     validate :validate_zip_contains_installer
     validate :validate_zip_type_is_package
+    validate :validate_record_is_consistent_with_zip
   end
 
   def username
@@ -121,8 +122,18 @@ class Package < ApplicationRecord
     errors.add(:zip, 'The zip files is not of type "package"')
   end
 
+  # This ensures the various attributes are the same in the db and the zip
+  def validate_record_is_consistent_with_zip
+    ['name', 'version'].each do |attr|
+      next if public_send(attr) == zip_metadata['attributes']&.[](attr)
+      errors.add(:zip, "The zip value for '#{attr}' does not match")
+    end
+  end
+
   def zip_metadata
-    JSON.parse(zip.read(zip.get_entry('metadata.json')))
+    @zip_metadata ||= begin
+      JSON.parse(zip.read(zip.get_entry('metadata.json')))
+    end
   end
 end
 
