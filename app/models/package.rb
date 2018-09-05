@@ -64,11 +64,11 @@ class Package < ApplicationRecord
 
   # The following validators only apply on create when the zip file needs
   # to be validated
-  with_options on: :create do |create|
-    validates :zip_file_path, presence: true
-    validate :validate_zip_contains_installer
-    validate :validate_zip_type_is_package
-    validate :validate_record_is_consistent_with_zip
+  with_options on: :create do |group|
+    group.validates :zip_file_path, presence: true
+    group.validate :validate_zip_contains_installer
+    group.validate :validate_zip_type_is_package
+    group.validate :validate_record_is_consistent_with_zip
   end
 
   def username

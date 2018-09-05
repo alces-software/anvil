@@ -48,6 +48,19 @@ RSpec.describe Package, type: :model do
 
       it { is_expected.to be_valid }
 
+      context 'when updating without the zip file' do
+        let(:update_object) do
+          subject.save!
+          described_class.find_by(name: subject.name).tap do |package|
+            package.zip_file_path = nil
+          end
+        end
+
+        it 'skips the zip file checks' do
+          expect(update_object).to be_valid
+        end
+      end
+
       context 'when the package_url has not been set' do
         let(:package_url) { nil }
         it { is_expected.not_to be_valid }
