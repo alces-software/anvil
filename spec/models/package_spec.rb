@@ -15,10 +15,11 @@ RSpec.describe Package, type: :model do
 
   it 'can explicitly set a category' do
     category = create(:category)
-    expect(create(:package, category: category).category).to eq(category)
+    package = create(:package, category: category)
+    expect(package.category).to eq(category)
   end
 
-  describe '::build_from_zip' do
+  shared_context 'package:zip-file-subject' do
     let(:zip_temp_file) { Tempfile.new(['anvil-test-package', '.zip']) }
     let(:zip_path) { zip_temp_file.path }
     let(:metadata_content) do {
@@ -48,6 +49,10 @@ RSpec.describe Package, type: :model do
         file: zip_path
       )
     end
+  end
+
+  describe '::build_from_zip' do
+    include_context 'package:zip-file-subject'
 
     let(:update_object) do
       subject.save!
