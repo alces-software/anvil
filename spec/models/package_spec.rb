@@ -39,6 +39,11 @@ RSpec.describe Package, type: :model do
       )
     end
 
+    let(:update_object) do
+      subject.save!
+      described_class.find_by(name: subject.name)
+    end
+
     it 'is invalid without the installer script' do
       expect(subject).not_to be_valid
     end
@@ -48,16 +53,25 @@ RSpec.describe Package, type: :model do
 
       it { is_expected.to be_valid }
 
-      context 'when updating without the zip file' do
-        let(:update_object) do
-          subject.save!
-          described_class.find_by(name: subject.name).tap do |package|
-            package.zip_file_path = nil
-          end
+      context 'when updated without the zip file' do
+        before do
+          update_object.zip_file_path = nil
+          update_object.save
         end
 
         it 'skips the zip file checks' do
           expect(update_object).to be_valid
+        end
+      end
+
+      context 'when updated with a missing zip file' do
+        before do
+          update_object.zip_file_path = '/some/missing/file.zip'
+          update_object.save
+        end
+
+        it 'runs the zip validation' do
+          expect(update_object).not_to be_valid
         end
       end
 

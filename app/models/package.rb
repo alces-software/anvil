@@ -66,6 +66,9 @@ class Package < ApplicationRecord
   # to be validated
   with_options on: :create do |group|
     group.validates :zip_file_path, presence: true
+  end
+
+  with_options if: :zip_file_path? do |group|
     group.validate :validate_zip_contains_installer
     group.validate :validate_zip_type_is_package
     group.validate :validate_record_is_consistent_with_zip
@@ -87,12 +90,18 @@ class Package < ApplicationRecord
 
   private
 
+  def zip_file_path?
+    !!zip_file_path
+  end
+
   # This method returns the zip object for the file
   # It only works if the zip_file_path has been set
   def zip
     return nil unless zip_file_path
     @zip ||= begin
       Zip::File.open(zip_file_path)
+    rescue Zip::Error
+      return nil
     end
   end
 
@@ -113,24 +122,25 @@ class Package < ApplicationRecord
   end
 
   def validate_zip_contains_installer
-    return if zip.find_entry('install.sh')
+    return if zip && zip.find_entry('install.sh')
     errors.add(:zip, 'The zip files is missing the "install.sh" script')
   end
 
   def validate_zip_type_is_package
-    return if zip_metadata['type'] == 'package'
+    return if zip && zip_metadata['type'] == 'package'
     errors.add(:zip, 'The zip files is not of type "package"')
   end
 
   # This ensures the various attributes are the same in the db and the zip
   def validate_record_is_consistent_with_zip
     ['name', 'version'].each do |attr|
-      next if public_send(attr) == zip_metadata['attributes']&.[](attr)
+      next if public_send(attr) == zip_metadata&.[]('attributes')&.[](attr)
       errors.add(:zip, "The zip value for '#{attr}' does not match")
     end
   end
 
   def zip_metadata
+    return unless zip
     @zip_metadata ||= begin
       JSON.parse(zip.read(zip.get_entry('metadata.json')))
     end
