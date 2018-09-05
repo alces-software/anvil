@@ -144,14 +144,13 @@ RSpec.describe Package, type: :model do
   end
 
   describe '::where_from_file' do
-    include_context 'package:zip-file-subject'
-    before { Helpers::ZipMaker.with_installer(zip_path) }
+    let(:query) do
+      described_class.where_from_zip(file: subject.zip_file_path)
+    end
+
+    subject { create(:package) }
 
     context 'when the record exists' do
-      let(:query) do
-        described_class.where_from_zip(file: zip_path)
-      end
-
       before { subject.save!.freeze }
 
       it 'returns a realtion' do
@@ -161,6 +160,22 @@ RSpec.describe Package, type: :model do
       it 'is the only relation' do
         expect(query.length).to be 1
         expect(query.first).to eq(subject)
+      end
+
+      context 'when a different user adds the package' do
+        let(:other_user) { create(:user, name: 'someone else') }
+        let(:other_package) do
+          build(:package,
+                 zip_file_path: subject.zip_file_path,
+                 user: other_user)
+        end
+
+        before { other_package.save! }
+
+        it 'returns both entries' do
+          expect(query).to include(subject)
+          expect(query).to include(other_package)
+        end
       end
     end
   end
