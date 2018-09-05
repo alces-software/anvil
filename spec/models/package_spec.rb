@@ -8,6 +8,16 @@ RSpec.describe Package, type: :model do
     expect(create(:package)).to be_valid
   end
 
+  it 'defaults to the uncategorised category' do
+    uncategorised = Category.find_by(name: 'Uncategorised')
+    expect(create(:package).category).to eq(uncategorised)
+  end
+
+  it 'can explicitly set a category' do
+    category = create(:category)
+    expect(create(:package, category: category).category).to eq(category)
+  end
+
   describe '::build_from_zip' do
     let(:zip_temp_file) { Tempfile.new(['anvil-test-package', '.zip']) }
     let(:zip_path) { zip_temp_file.path }

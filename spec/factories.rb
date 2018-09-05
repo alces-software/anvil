@@ -9,7 +9,6 @@ FactoryBot.define do
     licence 'Some MIT~Open Source Test License'
     package_url 'www.example.com/alces/test-package/url'
     user
-    category
     zip_file_path "/tmp/anvil-factory-package#{Time.now.to_i}.zip"
 
     # Hacks the creation of the zip file. The zip file is made before create

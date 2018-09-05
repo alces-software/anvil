@@ -74,6 +74,8 @@ class Package < ApplicationRecord
     group.validate :validate_record_is_consistent_with_zip
   end
 
+  before_validation :assign_default_category_if_missing
+
   def username
     # Convenience method to embed username in package resource without including everything to do with user
     user.name
@@ -137,6 +139,11 @@ class Package < ApplicationRecord
       next if public_send(attr) == zip_metadata&.[]('attributes')&.[](attr)
       errors.add(:zip, "The zip value for '#{attr}' does not match")
     end
+  end
+
+  def assign_default_category_if_missing
+    return if category
+    self.category = Category.find_by(name: 'Uncategorised')
   end
 
   def zip_metadata
