@@ -19,6 +19,19 @@ RSpec.describe Package, type: :model do
     expect(package.category).to eq(category)
   end
 
+  it 'has a factory method that automatically creates a zip file' do
+    package = create(:package)
+    expect(File.exist?(package.zip_file_path)).to be true
+  end
+
+  it 'can be built without a zip file' do
+    package = nil
+    expect do
+      package = build(:package, zip_file_path: nil)
+    end.not_to raise_error
+    expect(package.zip_file_path).to be_nil
+  end
+
   shared_context 'package:zip-file-subject' do
     let(:zip_temp_file) { Tempfile.new(['anvil-test-package', '.zip']) }
     let(:zip_path) { zip_temp_file.path }

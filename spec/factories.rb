@@ -14,20 +14,22 @@ FactoryBot.define do
     # Hacks the creation of the zip file. The zip file is made before create
     # and the deleted by the garbage collection
     before :create do |package|
-      Helpers::ZipMaker.with_metadata(
-        package.zip_file_path,
-        type: 'package',
-        attributes: {
-          name: package.name,
-          version: package.version
-        }
-      )
-      Helpers::ZipMaker.with_installer(package.zip_file_path)
-      # DO NOT reference package within the finalizer otherwise it won't
-      # be garbage collected
-      path = package.zip_file_path
-      # When the package is garbage collected, it will delete the zip file
-      ObjectSpace.define_finalizer(package) { FileUtils.rm(path) }
+      if package.zip_file_path
+        Helpers::ZipMaker.with_metadata(
+          package.zip_file_path,
+          type: 'package',
+          attributes: {
+            name: package.name,
+            version: package.version
+          }
+        )
+        Helpers::ZipMaker.with_installer(package.zip_file_path)
+        # DO NOT reference package within the finalizer otherwise it won't
+        # be garbage collected
+        path = package.zip_file_path
+        # When the package is garbage collected, it will delete the zip file
+        ObjectSpace.define_finalizer(package) { FileUtils.rm(path) }
+      end
     end
   end
 
