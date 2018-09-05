@@ -4,8 +4,8 @@ require 'zip'
 class Package < ApplicationRecord
   class << self
     def where_from_zip(file:)
-      package = build_from_zip(file: file)
-      where(name: package.name, version: package.version)
+      extract = build_from_zip(file: file)
+      where(name: extract.name, version: extract.version)
     end
 
     def build_from_zip(file:, **input_args)
