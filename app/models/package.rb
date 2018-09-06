@@ -90,7 +90,7 @@ class Package < ApplicationRecord
     zip_metadata['attributes']&.each do |key, value|
       setter = :"#{key}="
       next unless respond_to?(setter)
-      next if public_send(key)
+      next unless Array.wrap(public_send(key)).empty?
       public_send(setter, value)
     end
   end
