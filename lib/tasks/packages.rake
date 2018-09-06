@@ -123,10 +123,9 @@ namespace :packages do
 
   def add_package_from_zip_path(zip_path)
     user = User.where(name: 'alces').first_or_create
-    category = Category.where(name: 'uncategorised').first_or_create
     url = extract_package_url(zip_path)
     Package.build_from_zip(
-      user: user, category: category, package_url: url, file: zip_path
+      user: user, package_url: url, file: zip_path
     ).save
   end
 
