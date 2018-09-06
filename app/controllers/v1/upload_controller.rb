@@ -19,17 +19,14 @@ class V1::UploadController < ApplicationController
   def upload
     raise CanCan::AccessDenied.new('You must be logged in to upload files.') unless current_user
 
-    package = uploaded_zip do |z|
-      validate_contents(z)
-      metadata = metadata_from(z)
+    path = package_param.path
+    package = Package.where_zip(file: path, user: current_user)
+                     .find_or_create_by(nil) do |p|
+                       p.zip_file_path = path
+                       p.set_missing_attributes_from_zip
+                     end
 
-      validate_metadata(metadata)
-      attrs = metadata['attributes']
-
-      package = Package.where(user: current_user, name: attrs['name'], version: attrs['version']).first_or_create
-
-      set_attributes(package, attrs)
-
+    uploaded_zip do |z|
       package.package_url = ::Alces::Anvil::S3Utils.url_for(package)
       package.save!  # We need to save the package to let the PackageResource generate properly
 
@@ -53,8 +50,12 @@ class V1::UploadController < ApplicationController
     request.protocol + request.host_with_port
   end
 
+  def package_param
+    params.require(:package)
+  end
+
   def uploaded_zip
-    Zip::File.open(params[:package].path) do |z| yield(z) end
+    Zip::File.open(package_param.path) do |z| yield(z) end
   end
 
   def metadata_from(zip)
