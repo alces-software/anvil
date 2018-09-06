@@ -3,7 +3,7 @@ require 'zip'
 
 class Package < ApplicationRecord
   class << self
-    def where_from_zip(file:)
+    def where_zip(file:)
       extract = build_from_zip(file: file)
       where(name: extract.name, version: extract.version)
     end

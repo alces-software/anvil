@@ -143,9 +143,9 @@ RSpec.describe Package, type: :model do
     end
   end
 
-  describe '::where_from_file' do
+  describe '::where_zip' do
     let(:query) do
-      described_class.where_from_zip(file: subject.zip_file_path)
+      described_class.where_zip(file: subject.zip_file_path)
     end
 
     subject { create(:package) }
