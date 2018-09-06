@@ -20,11 +20,12 @@ class V1::UploadController < ApplicationController
     raise CanCan::AccessDenied.new('You must be logged in to upload files.') unless current_user
 
     path = package_param.path
-    package = Package.where_zip(file: path, user: current_user)
-                     .find_or_create_by(nil) do |p|
-                       p.zip_file_path = path
-                       p.set_missing_attributes_from_zip
-                     end
+    package = Package.where_zip(file: path, user: current_user).first
+    package = if package.nil?
+                Package.build_from_zip(file: path, user: current_user)
+              else
+                package.tap { |x| x.zip_file_path = path }
+              end
 
     uploaded_zip do |z|
       package.package_url = ::Alces::Anvil::S3Utils.url_for(package)
