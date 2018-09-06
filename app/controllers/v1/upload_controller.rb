@@ -57,38 +57,4 @@ class V1::UploadController < ApplicationController
   def uploaded_zip
     Zip::File.open(package_param.path) do |z| yield(z) end
   end
-
-  def metadata_from(zip)
-    JSON.parse(zip.read(zip.get_entry('metadata.json')))
-  end
-
-  def validate_contents(zip)
-    check(zip.find_entry('install.sh'), 'Package must contain an install.sh script')
-    check(zip.find_entry('metadata.json'), 'Package must contain a metadata.json file')
-  end
-
-  def validate_metadata(metadata)
-    check(metadata.include?('type'), 'Must be in correct format (missing key: type)')
-    check(metadata['type'] == 'packages', 'Must be of type=packages')
-    check(metadata.include?('attributes'), 'Must be in correct format (missing key: attributes')
-    validate_attributes(metadata['attributes'])
-  end
-
-  def validate_attributes(attrs)
-    check(attrs.include?('name'), 'Package metadata must specify a name')
-    check(attrs.include?('version'), 'Package metadata must specify a version')
-  end
-
-  def set_attributes(package, attrs)
-    attrs.each do |key, value|
-      setter = "#{key.underscore}=".to_sym
-      if package.respond_to?(setter)
-        package.send(setter, value)
-      end
-    end
-  end
-
-  def check(condition, message)
-    raise InvalidUploadException.new(message) unless condition
-  end
 end
