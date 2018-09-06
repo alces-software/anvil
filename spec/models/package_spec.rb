@@ -39,7 +39,7 @@ RSpec.describe Package, type: :model do
       type: zip_type,
       attributes: package_attributes
     } end
-    let(:zip_type) { 'package' }
+    let(:zip_type) { 'packages' }
     let(:package_attributes) do {
       name: 'test-package',
       version: '0.0.1'

@@ -17,7 +17,7 @@ FactoryBot.define do
       if package.zip_file_path
         Helpers::ZipMaker.with_metadata(
           package.zip_file_path,
-          type: 'package',
+          type: 'packages',
           attributes: {
             name: package.name,
             version: package.version

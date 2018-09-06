@@ -134,8 +134,8 @@ class Package < ApplicationRecord
   end
 
   def validate_zip_type_is_package
-    return if zip && zip_metadata['type'] == 'package'
-    errors.add(:zip, 'The zip files is not of type "package"')
+    return if zip && zip_metadata['type'] == 'packages'
+    errors.add(:zip, 'The zip files is not of type "packages"')
   end
 
   # This ensures the various attributes are the same in the db and the zip
