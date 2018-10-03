@@ -8,8 +8,10 @@ if [ -f ./${package_name}.zip ]; then
 fi
 
 temp_dir=$(mktemp -d /tmp/${package_name}-build-XXXXX)
-anvil_dir="$temp_dir/data/opt/anvil"
 
+cp -r * $temp_dir
+
+anvil_dir="$temp_dir/data/opt/anvil"
 mkdir -p $anvil_dir
 
 pushd .. > /dev/null
