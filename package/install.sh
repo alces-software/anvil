@@ -1,4 +1,4 @@
 #!/bin/bash
 
-cp -R * "${FL_ROOT}/opt/anvil"
+cp -R data/* "${FL_ROOT}"
 

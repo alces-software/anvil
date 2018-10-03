@@ -18,3 +18,7 @@ vendor/
 
 # Ignore the public directory
 public/
+
+# Ignore the package file
+package/anvil.zip
+

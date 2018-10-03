@@ -8,6 +8,13 @@ if [ -f ./${package_name}.zip ]; then
 fi
 
 temp_dir=$(mktemp -d /tmp/${package_name}-build-XXXXX)
+anvil_dir="$temp_dir/data/opt/anvil"
+
+mkdir -p $anvil_dir
+
+pushd .. > /dev/null
+git archive HEAD | tar -x -C "${temp_dir}"/data/opt/anvil
+popd > /dev/null
 
 pushd "${temp_dir}" > /dev/null
 zip -r ${package_name}.zip *
