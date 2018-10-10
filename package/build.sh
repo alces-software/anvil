@@ -9,6 +9,18 @@ if [ -f ./${package_name}.zip ]; then
   rm ./${package_name}.zip
 fi
 
+# Determines the metadata path
+metadata="$(pwd)/metadata.json"
+
+# Determines the version number from the metadata
+gem install json
+version=$(cat << EOF | ruby
+require 'json'
+metadata = JSON.parse(File.read('$metadata'))
+print metadata['attributes']['version']
+EOF
+)
+
 temp_dir=$(mktemp -d /tmp/${package_name}-build-XXXXX)
 
 cp -r * $temp_dir
@@ -17,7 +29,7 @@ anvil_dir="$temp_dir/data/opt/anvil"
 mkdir -p $anvil_dir
 
 pushd .. > /dev/null
-git archive HEAD | tar -x -C "${temp_dir}"/data/opt/anvil
+git archive $version | tar -x -C "${temp_dir}"/data/opt/anvil
 popd > /dev/null
 
 pushd "${temp_dir}" > /dev/null
