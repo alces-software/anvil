@@ -47,59 +47,9 @@ this isn't very important right now. In general we need to think about versionin
 content items such as Gridware and customizers, and also in terms of Clusterware version
 compatibilities.)
 
-# ANVIL: Offline Install Guide
+# Creating a Database Snapshot
 
-Anvil is a `metadata` server that records the URL of a series of packages.
-It is possible to setup `anvil` to server forge packages over a local
-network. By doing so, `flight` can forge install without an external
-internet connection.
-
-## Getting Started
-### Cloning the git repo
-
-This is a private repo, so the initial install can not be bootstrapped at
-this point in time. Instead the repo must be manually clone with your
-credentials:
-```
-git clone https://github.com/alces-software/anvil.git
-Cloning into 'anvil'...
-Username for 'https://github.com':
-Password for 'https://sg@github.com':
-```
-
-### Running the Install and preforming the Snapshot
-
-Anvil has been designed to run with a existing installation of ruby. This can either be RVM ruby OR Flight Direct ruby. If using Flight Direct, please remember to switch to the runtime environment with `flight bash`.
-
-Any recent version of ruby (2.4+) should work, however it has only been tested on ruby 2.5.1.
-
-Whilst running as root, the install and snapshot can be started with:
-```
-# NOTE: This script might stop and wait for a IP to build on
-# SEE: Database Snapshot section for more details
-./anvil/scripts/install.sh
-
-```
-
-#### Note: Installing PostgreSQL
-
-Postgres is not installed using `yum`. The `yum` repo version is Postgres9.2
-which is not compatible with the `pg` gem used by rails. The `pg` gem
-contains C native extensions that need to be compiled against the shared
-libraries. It is possible add the `postgres9.6` repo to yum, however it
-becomes a bit of a hack to get the shared libraries in the correct places.
-
-Instead postgres is installed from source. This way the header files are
-immediately ready for `rubygem` to come along latter. The postgres install
-can be ran independently with:
-```
-./anvil/scripts/setup-postgres.sh
-```
-
-## Creating a Database Snapshot
-
-The database snapshot will be automatically triggered by the install
-script. However it can also be triggered manually using:
+The database snapshot can be triggered manually using:
 ```
 # cd ./anvil
 # rake packages:snapshot
@@ -115,7 +65,7 @@ NOTE: The answer should not include the protocol as it will default to
 `http`. However the underlining `ANVIL_BASE_URL` needs to be fully
 qualified including the protocol.
 
-### Environment Setup
+## Environment Setup
 
 Running the `snapshot` rake command does not alter your environment setup,
 it does however use the following environment variables internally
@@ -137,7 +87,7 @@ ANVIL_BASE_URL:  A fully qualified URL (inc. protocol) to where the
                  permanetly set within the environment. There is no default
 ```
 
-### Drop DB and Running the Snapshot Manually
+## Drop DB and Running the Snapshot Manually
 
 If the above environment variable are set, then `rake package:snapshot`
 will automatically download and import the database in a single set.
