@@ -2,7 +2,7 @@
   "type": "packages",
   "attributes": {
     "name": "anvil",
-    "version": "0.0.0",
+    "version": "1.0.0",
     "summary": "Contains the anvil source code",
     "dependencies": [
     ]

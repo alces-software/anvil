@@ -45,8 +45,7 @@ namespace :packages do
   desc 'Download and import the packages'
   task snapshot: :environment do
     exit_if_db_exists('snapshot')
-    ENV['ANVIL_BASE_URL'] ||= \
-      'http://' + ask('Which IP/domain are the packages hosted on?')
+    raise 'The ANVIL_BASE_URL has not been set' unless ENV['ANVIL_BASE_URL']
     ENV['ANVIL_UPSTREAM'] ||= 'https://forge-api.alces-flight.com'
     ENV['ANVIL_LOCAL_DIR'] ||= File.expand_path(File.join(
       File.dirname(__FILE__), '..', '..', 'public'
