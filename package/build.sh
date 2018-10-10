@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -e
+
 package_name='anvil'
 
 if [ -f ./${package_name}.zip ]; then
