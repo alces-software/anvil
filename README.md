@@ -53,6 +53,11 @@ directory is searched recursively for all `.zip` files. The packages are
 directly added to the database without going through the upload and thus
 do not require sign in credentials.
 
+The import is preformed use rake:
+```
+rake packages:import
+```
+
 In order for the packages to be added correctly, the base url and package
 directory must be set as environment variables:
 
