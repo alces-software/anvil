@@ -9,8 +9,9 @@ require_relative File.join(ENV['FL_ROOT'], 'lib/flight_direct/version.rb')
 namespace :packages do
   desc 'Import packages from a local source'
   task import: :environment do
-    raise 'The ANVIL_LOCAL_DIR has not been set' unless ENV['ANVIL_LOCAL_DIR']
-    raise 'The ANVIL_BASE_URL has not been set' unless ENV['ANVIL_BASE_URL']
+    ['ANVIL_LOCAL_DIR', 'ANVIL_BASE_URL'].each do |env|
+      raise "The #{env} has not been set" unless ENV[env]
+    end
     files = Dir[package_path('**/*.zip')]
     files.define_singleton_method(:delete_if_saveable) do
       self.delete_if { |f| add_package_from_zip_path(f) }
