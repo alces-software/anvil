@@ -9,7 +9,7 @@ require_relative File.join(ENV['FL_ROOT'], 'lib/flight_direct/version.rb')
 namespace :packages do
   desc 'Import packages from a local source'
   task import: :environment do
-    ['ANVIL_LOCAL_DIR', 'ANVIL_BASE_URL'].each do |env|
+    ['ANVIL_IMPORT_DIR', 'ANVIL_BASE_URL'].each do |env|
       raise "The #{env} has not been set" unless ENV[env]
     end
     files = Dir[package_path('**/*.zip')]
@@ -25,12 +25,12 @@ namespace :packages do
   end
 
   def package_path(relative_path)
-    File.join(ENV['ANVIL_LOCAL_DIR'], 'packages', relative_path)
+    File.join(ENV['ANVIL_IMPORT_DIR'], relative_path)
   end
 
   def extract_package_url(absolute_path)
-    relative_path = absolute_path&.sub(ENV['ANVIL_LOCAL_DIR'], '')
-    File.join(ENV['ANVIL_BASE_URL'], relative_path)
+    relative_path = absolute_path&.sub(ENV['ANVIL_IMPORT_DIR'], '')
+    File.join(ENV['ANVIL_BASE_URL'], 'packages', relative_path)
   end
 
   def add_package_from_zip_path(zip_path)
