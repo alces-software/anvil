@@ -47,81 +47,38 @@ this isn't very important right now. In general we need to think about versionin
 content items such as Gridware and customizers, and also in terms of Clusterware version
 compatibilities.)
 
-# Creating a Database Snapshot
+# Importing local packages into the database
+It is possible to import packages into the database from a directory. The
+directory is searched recursively for all `.zip` files. The packages are
+directly added to the database without going through the upload and thus
+do not require sign in credentials.
 
-The database snapshot can be triggered manually using:
+The import is preformed use rake:
 ```
-# cd ./anvil
-# rake packages:snapshot
-Which IP/domain are the packages hosted on?
-> www.example.com
-```
-
-Running this command with no other system configurations sets up the
-default server, however it still needs to be told which ip/ domain the
-packages will be hosted on. See environment setup for more details
-
-NOTE: The answer should not include the protocol as it will default to
-`http`. However the underlining `ANVIL_BASE_URL` needs to be fully
-qualified including the protocol.
-
-## Environment Setup
-
-Running the `snapshot` rake command does not alter your environment setup,
-it does however use the following environment variables internally
-
-```
-ANVIL_LOCAL_DIR: The base directory for the download. Typically this would
-                 be hosted on the rails in built `public` directory or
-                 hosted by apache/ enginx. Anvil will store the files in
-                 a `packages` sub directory
-                 DEFAULT: /path/to/anvil/public
-
-ANVIL_UPSTREAM:  The upstream anvil database to take the snapshot on. It
-                 defaults to the main production database.
-                 DEFAULT: https://forge-api.alces-flight.com
-
-ANVIL_BASE_URL:  A fully qualified URL (inc. protocol) to where the
-                 packages will be hosted. This will be stored in the db
-                 with the package metadata. Thus it does not need to be
-                 permanetly set within the environment. There is no default
+rake packages:import
 ```
 
-## Drop DB and Running the Snapshot Manually
-
-If the above environment variable are set, then `rake package:snapshot`
-will automatically download and import the database in a single set.
-
-The automatic snapshot will not work if the database already exists as
-it can not recover from any errors. Instead the snapshot should be
-preformed step by step using the commands bellow.
-
-It does require the above environment variables to be set manually as well,
-refer to `lib/rake/packages.rb` for further details.
+In order for the packages to be added correctly, the base url and package
+directory must be set as environment variables:
 
 ```
-rake snapshot:download
-rake snashot:import
-```
+ANVIL_BASE_URL:   A fully qualified URL (inc. protocol) to where the
+                  packages will be hosted. This will be stored in the db
+                  with the package metadata. Thus it does not need to be
+                  permanetly set within the environment.
 
-Alternatively the database could be dropped with:
-```
-rake db:drop
-```
+ANVIL_IMPORT_DIR: The directory the packages are imported from. The import
+                  command does not concern itself with the hosting of the
+                  packages. It assumes the packages will be found at:
+                  http://$ANVIL_BASE_URL/packages/<relative-package-path>
 
-## Running the Server
+                  Typically packages will be hosted from within the anvil
+                  public directory. Thus ANVIL_IMPORT_DIR would normally
+                  be set to: /<path-to>/anvil/public/packages
 
-You are now ready to start the `anvil` rails server with the command bellow.
-This will likely launch in development mode if no further configurations are
-made. This means the `public` directory should be statically served without
-any futher configurations.
-
-However there is no reason why the packages need to be hosted on this
-machine, the packages can be hosted anywhere as long as the
-`ANVIL_BASE_URL` was set correctly when the import occurred.
-NOTE: Changes to the base url after the fact will be ignored
-
-```
-bin/rails server -p 80 -b 0.0.0.0
+                  However a different static file server could be used
+                  (e.g. nginx). In this case the import dir should be set
+                  accordingly. It is the responsibility of the user to
+                  ensure the package is reachable at the above address.
 ```
 
