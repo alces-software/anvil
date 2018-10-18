@@ -10,3 +10,4 @@ User.create(name: 'alces')
 
 Category.create(name: 'Software')
 Category.create(name: 'Config')
+Category.create(name: 'Uncategorised')

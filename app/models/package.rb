@@ -1,4 +1,46 @@
+
+require 'zip'
+
 class Package < ApplicationRecord
+  class << self
+    def where_zip(file:, **inputs_args)
+      extract = build_from_zip(file: file)
+      where(name: extract.name, version: extract.version, **inputs_args)
+    end
+
+    def build_from_zip(file:, **input_args)
+      new(zip_file_path: file, **input_args).tap do |p|
+        p.set_missing_attributes_from_zip
+      end
+    end
+
+    def from_package_path(path)
+      package_props = split_package_path(path)
+      user = User.find_by_name(package_props[:user])
+      candidates = Package.where(user: user, name: package_props[:package])
+
+      if package_props[:version]
+        candidates.find_by_version(package_props[:version])
+      else
+        candidates.order(version: :desc).first
+      end
+    end
+
+    private
+
+    def split_package_path(path)
+      match = /(?<user>[^\/]+)\/(?<package>[^\/]+)(\/(?<version>[^\/]+))?/.match(path)
+
+      raise 'Unrecognised package format. Please specify as username/packagename[/version]' unless match
+
+      match
+    end
+  end
+
+  # This path is only used on the upload to validate the zip file is valid
+  # As it is not the permanent path, it is not stored in the database
+  attr_accessor :zip_file_path
+
   include Taggable
   belongs_to :user
   belongs_to :category
@@ -10,6 +52,7 @@ class Package < ApplicationRecord
             }
 
   validates :version,
+            presence: true,
             uniqueness: {
                 scope: [:user, :name]
             }
@@ -24,31 +67,49 @@ class Package < ApplicationRecord
 
   validate :validate_dependencies
 
+  # The following validators only apply on create when the zip file needs
+  # to be validated
+  with_options on: :create do |group|
+    group.validates :zip_file_path, presence: true
+  end
+
+  with_options if: :zip_file_path? do |group|
+    group.validate :validate_zip_contains_installer
+    group.validate :validate_zip_type_is_package
+    group.validate :validate_record_is_consistent_with_zip
+  end
+
+  before_validation :assign_default_category_if_missing
+
   def username
     # Convenience method to embed username in package resource without including everything to do with user
     user.name
   end
 
-  def self.from_package_path(path)
-    package_props = split_package_path(path)
-    user = User.find_by_name(package_props[:user])
-    candidates = Package.where(user: user, name: package_props[:package])
-
-    if package_props[:version]
-      candidates.find_by_version(package_props[:version])
-    else
-      candidates.order(version: :desc).first
+  def set_missing_attributes_from_zip
+    zip_metadata['attributes']&.each do |key, value|
+      setter = :"#{key}="
+      next unless respond_to?(setter)
+      next unless Array.wrap(public_send(key)).empty?
+      public_send(setter, value)
     end
   end
 
   private
 
-  def self.split_package_path(path)
-    match = /(?<user>[^\/]+)\/(?<package>[^\/]+)(\/(?<version>[^\/]+))?/.match(path)
+  def zip_file_path?
+    !!zip_file_path
+  end
 
-    raise 'Unrecognised package format. Please specify as username/packagename[/version]' unless match
-
-    match
+  # This method returns the zip object for the file
+  # It only works if the zip_file_path has been set
+  def zip
+    return nil unless zip_file_path
+    @zip ||= begin
+      Zip::File.open(zip_file_path)
+    rescue Zip::Error
+      return nil
+    end
   end
 
   def validate_dependencies
@@ -66,4 +127,35 @@ class Package < ApplicationRecord
       end
     end
   end
+
+  def validate_zip_contains_installer
+    return if zip && zip.find_entry('install.sh')
+    errors.add(:zip, 'The zip files is missing the "install.sh" script')
+  end
+
+  def validate_zip_type_is_package
+    return if zip && zip_metadata['type'] == 'packages'
+    errors.add(:zip, 'The zip files is not of type "packages"')
+  end
+
+  # This ensures the various attributes are the same in the db and the zip
+  def validate_record_is_consistent_with_zip
+    ['name', 'version'].each do |attr|
+      next if public_send(attr) == zip_metadata&.[]('attributes')&.[](attr)
+      errors.add(:zip, "The zip value for '#{attr}' does not match")
+    end
+  end
+
+  def assign_default_category_if_missing
+    return if category
+    self.category = Category.find_by(name: 'Uncategorised')
+  end
+
+  def zip_metadata
+    return unless zip
+    @zip_metadata ||= begin
+      JSON.parse(zip.read(zip.get_entry('metadata.json')))
+    end
+  end
 end
+

@@ -24,7 +24,13 @@ class User < ApplicationRecord
       u.name = claims.fetch('username')
       u.save
     end
-
   end
 
+  # This method is only intended to be used in development for generating
+  # tokens. It is not guaranteed to be the same as the FLIGHT_SSO server
+  def generate_jwt_token
+    JsonWebToken.encode({
+      'username' => name, 'email' => email, 'flight_id' => flight_id
+    })
+  end
 end
