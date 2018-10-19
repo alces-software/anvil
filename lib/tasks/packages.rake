@@ -4,8 +4,6 @@ require 'parallel'
 require 'open-uri'
 require 'highline/import'
 
-require_relative File.join(ENV['FL_ROOT'], 'lib/flight_direct/version.rb')
-
 namespace :packages do
   desc 'Import packages from a local source'
   task import: :environment do
