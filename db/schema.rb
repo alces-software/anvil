@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180905130005) do
+ActiveRecord::Schema.define(version: 20190206134009) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -45,6 +45,12 @@ ActiveRecord::Schema.define(version: 20180905130005) do
     t.datetime "updated_at", null: false
   end
 
+  create_table "documents", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.string "name", limit: 512, null: false
+    t.uuid "site_id"
+    t.index ["site_id"], name: "index_documents_on_site_id"
+  end
+
   create_table "packages", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.uuid "user_id"
     t.string "name", limit: 512, null: false
@@ -62,6 +68,13 @@ ActiveRecord::Schema.define(version: 20180905130005) do
     t.index ["name", "version", "user_id"], name: "index_packages_on_name_and_version_and_user_id", unique: true
   end
 
+  create_table "sites", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.string "name"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["name"], name: "index_sites_on_name", unique: true
+  end
+
   create_table "taggings", force: :cascade do |t|
     t.string "tag_id", null: false
     t.uuid "taggable_id", null: false
@@ -77,7 +90,8 @@ ActiveRecord::Schema.define(version: 20180905130005) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "email", default: "", null: false
-    t.uuid "flight_id", default: "09cff8a7-48c6-4cbd-b33b-e5babfb47af5", null: false
+    t.uuid "flight_id", null: false
+    t.uuid "site_id"
     t.index ["name"], name: "index_users_on_name", unique: true
   end
 

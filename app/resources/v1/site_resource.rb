@@ -1,16 +1,9 @@
 module V1
-  class UserResource < ResourceBase
+  class SiteResource < ResourceBase
     attributes :name
 
-    filter :flight_id
+    has_many :users, always_include_linkage_data: true
 
-    has_many :articles, always_include_linkage_data: true
-    has_many :packages, always_include_linkage_data: true
-
-    has_many :collections, always_include_linkage_data: true
-
-    belongs_to :site
-    
     key_type :string
 
     UUID_REGEX = /[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/
@@ -19,7 +12,7 @@ module V1
       if UUID_REGEX.match?(key)
         super
       else
-        model = User.find_by_name(key)
+        model = Site.find_by_name(key)
         fail JSONAPI::Exceptions::RecordNotFound.new(key) if model.nil?
         resource_for_model(model).new(model, options[:context])
       end

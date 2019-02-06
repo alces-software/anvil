@@ -6,7 +6,9 @@ class Ability
     can :read, Article
     can :read, Category
     can :read, User
+    can :read, Site
     can :read, Package
+    can :read, Document
 
     # Current assumption: all collections are public.
     # We might want to introduce private or privately-shared collections at some point.

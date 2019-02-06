@@ -6,7 +6,7 @@
 #   movies = Movie.create([{ name: 'Star Wars' }, { name: 'Lord of the Rings' }])
 #   Character.create(name: 'Luke', movie: movies.first)
 
-User.create(name: 'alces')
+User.create(name: 'alces', flight_id: '6c1b9267-ee4b-4db6-9398-4514042c40d7')
 
 Category.create(name: 'Software')
 Category.create(name: 'Config')
