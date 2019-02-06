@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20190206134009) do
+ActiveRecord::Schema.define(version: 20190206170604) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -48,6 +48,7 @@ ActiveRecord::Schema.define(version: 20190206134009) do
   create_table "documents", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.string "name", limit: 512, null: false
     t.uuid "site_id"
+    t.string "content_type", limit: 255
     t.index ["site_id"], name: "index_documents_on_site_id"
   end
 

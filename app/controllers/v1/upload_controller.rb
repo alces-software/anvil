@@ -19,6 +19,24 @@ class V1::UploadController < ApplicationController
   def upload
     raise CanCan::AccessDenied.new('You must be logged in to upload files.') unless current_user
 
+    # Determine the file type of the content
+    if params.include?(:package)
+      upload_package
+    elsif params.include?(:document)
+      upload_document
+    else
+      raise InvalidUploadException, 'Required parameter not found for upload'
+    end
+  end
+
+  def upload_document
+    path = document_param.path
+    document = Document.create(name: document_name, site: current_user.site)
+    document.upload_from_path(path)
+    render json: document
+  end
+
+  def upload_package
     path = package_param.path
     package = Package.where_zip(file: path, user: current_user).first
     package = if package.nil?
@@ -53,6 +71,17 @@ class V1::UploadController < ApplicationController
 
   def package_param
     params.require(:package)
+  end
+
+  def document_param
+    params.require(:document)
+  end
+
+  def document_name
+    params.fetch(:name) do
+      document_param.original_filename ||
+        "Untitled Document (#{Time.now.strftime('%Y-%m-%d %H:%M:%S')})"
+    end
   end
 
   def uploaded_zip

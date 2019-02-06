@@ -3,6 +3,7 @@ module V1
     attributes :name
 
     has_many :users, always_include_linkage_data: true
+    has_many :documents, always_include_linkage_data: true
 
     key_type :string
 

@@ -1,4 +1,7 @@
 class ApplicationController < ActionController::Base
+  before_action do
+    Thread.current[:host] = request.host_with_port
+  end
 
   rescue_from CanCan::AccessDenied do |exception|
     error_object = {

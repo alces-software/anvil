@@ -16,4 +16,6 @@ Rails.application.routes.draw do
     get 'search', to: 'search#search'
     post 'upload', to: 'upload#upload'
   end
+
+  resources :documents, only: [:show]
 end

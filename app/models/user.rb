@@ -7,7 +7,7 @@ class User < ApplicationRecord
   has_many :gridware, class_name: 'GridwarePackage'
   has_many :packages
   has_many :collections
-  belongs_to :site
+  belongs_to :site, optional: true
 
   validates :name, uniqueness: true
 
