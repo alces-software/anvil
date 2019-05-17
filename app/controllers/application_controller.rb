@@ -15,7 +15,8 @@ class ApplicationController < ActionController::Base
   end
 
   def current_user
-    auth_cookie = cookies['flight_sso']
+    sso_cookie_name = Rails.application.config.sso_cookie_name
+    auth_cookie = cookies[sso_cookie_name]
     auth_header = request.headers['Authorization']
 
     return nil unless auth_cookie.present? || auth_header.present?
